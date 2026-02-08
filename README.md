@@ -51,13 +51,13 @@ Expressions use S-expression syntax.
 
 ```
 (if true 1 2)                    => 1
-(if (isEqual 1 2) "same" "diff") => diff
+(if (isEqual 1 2) 'same' 'diff') => diff
 ```
 
 ### Text
 
 ```
-(text/concat "hello" " " "world") => hello world
+(text/concat 'hello' ' world') => hello world
 ```
 
 ### Type Checks
