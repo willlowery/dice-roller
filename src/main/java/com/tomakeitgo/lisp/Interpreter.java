@@ -28,6 +28,7 @@ public class Interpreter {
         sContext.register("number/add", new AddNumberOperator());
         sContext.register("number/sub", new SubNumberOperator());
         sContext.register("number/mul", new MulNumberOperator());
+        sContext.register("number/div", new DivNumberOperator());
 
         return sContext;
     }
