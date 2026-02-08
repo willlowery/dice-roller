@@ -70,8 +70,7 @@ public class InputBar {
     private void historyBack() {
         ArrayList<String> commands = context.getCommands();
         if (commands.size() > historyIndex) {
-            resetBuffer();
-            buffer.insert(indicator.length(), commands.get(commands.size() - historyIndex - 1));
+            loadHistory(historyIndex);
         }
         historyIndex = Math.min(commands.size() - 1, historyIndex + 1);
     }
@@ -80,12 +79,16 @@ public class InputBar {
         if (historyIndex == 0) {
             resetBuffer();
         } else {
-            ArrayList<String> commands = context.getCommands();
             historyIndex = Math.max(0, historyIndex - 1);
-            if (commands.size() > historyIndex) {
-                resetBuffer();
-                buffer.insert(indicator.length(), commands.get(commands.size() - historyIndex - 1));
-            }
+            loadHistory(historyIndex);
+        }
+    }
+
+    private void loadHistory(int targetIndex) {
+        ArrayList<String> commands = context.getCommands();
+        resetBuffer();
+        if (targetIndex >= 0 && targetIndex < commands.size()) {
+            buffer.insert(indicator.length(), commands.get(commands.size() - targetIndex - 1));
         }
     }
 
