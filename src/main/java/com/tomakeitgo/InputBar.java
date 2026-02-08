@@ -23,67 +23,81 @@ public class InputBar {
 
     public void input(KeyStroke stroke) {
         switch (stroke.getKeyType()) {
-            case Character -> {
-                buffer.insert(index, stroke.getCharacter());
-                buffer.setLength(columns);
-                increment();
-            }
-            case Backspace -> {
-                if (index > indicator.length()) {
-                    decrement();
-                    buffer.deleteCharAt(index);
-                    buffer.setLength(columns);
-                }
-            }
-            case ArrowLeft -> {
-                if (stroke.isAltDown()) {
-                    index = indicator.length();
-                } else {
-                    decrement();
-                }
-            }
-            case ArrowRight -> {
-                if (stroke.isAltDown()) {
-                    int end = buffer.length();
-                    while (end > indicator.length() && Character.isSpaceChar(buffer.charAt(end - 1))) {
-                        end--;
-                    }
-                    index = end;
-                } else {
-                    increment();
-                }
-            }
-            case ArrowUp -> {
-                ArrayList<String> commands = context.getCommands();
-                if (commands.size() > historyIndex) {
-                    resetBuffer();
-                    buffer.insert(indicator.length(), commands.get(commands.size() - historyIndex - 1));
-                }
-                historyIndex = Math.min(commands.size() - 1, historyIndex + 1);
-            }
-            case ArrowDown -> {
-                if (historyIndex == 0) {
-                    resetBuffer();
-                } else {
-                    ArrayList<String> commands = context.getCommands();
-                    historyIndex = Math.max(0, historyIndex - 1);
-                    if (commands.size() > historyIndex) {
-                        resetBuffer();
-                        buffer.insert(indicator.length(), commands.get(commands.size() - historyIndex - 1));
-                    }
-                }
-            }
-            case Enter -> {
-                String command = buffer
-                        .substring(indicator.length())
-                        .replace((char) 0, ' ')
-                        .trim();
+            case Character  -> insertCharacter(stroke.getCharacter());
+            case Backspace  -> backspace();
+            case ArrowLeft  -> moveLeft(stroke);
+            case ArrowRight -> moveRight(stroke);
+            case ArrowUp    -> historyBack();
+            case ArrowDown  -> historyForward();
+            case Enter      -> submit();
+        }
+    }
 
-                context.queue(command);
-                historyIndex = 0;
+    private void insertCharacter(char c) {
+        buffer.insert(index, c);
+        buffer.setLength(columns);
+        increment();
+    }
+
+    private void backspace() {
+        if (index > indicator.length()) {
+            decrement();
+            buffer.deleteCharAt(index);
+            buffer.setLength(columns);
+        }
+    }
+
+    private void moveLeft(KeyStroke stroke) {
+        if (stroke.isAltDown()) {
+            index = indicator.length();
+        } else {
+            decrement();
+        }
+    }
+
+    private void moveRight(KeyStroke stroke) {
+        if (stroke.isAltDown()) {
+            int end = buffer.length();
+            while (end > indicator.length() && Character.isSpaceChar(buffer.charAt(end - 1))) {
+                end--;
+            }
+            index = end;
+        } else {
+            increment();
+        }
+    }
+
+    private void historyBack() {
+        ArrayList<String> commands = context.getCommands();
+        if (commands.size() > historyIndex) {
+            resetBuffer();
+            buffer.insert(indicator.length(), commands.get(commands.size() - historyIndex - 1));
+        }
+        historyIndex = Math.min(commands.size() - 1, historyIndex + 1);
+    }
+
+    private void historyForward() {
+        if (historyIndex == 0) {
+            resetBuffer();
+        } else {
+            ArrayList<String> commands = context.getCommands();
+            historyIndex = Math.max(0, historyIndex - 1);
+            if (commands.size() > historyIndex) {
                 resetBuffer();
+                buffer.insert(indicator.length(), commands.get(commands.size() - historyIndex - 1));
             }
         }
+    }
+
+    private void submit() {
+        String command = buffer
+                .substring(indicator.length())
+                .replace((char) 0, ' ')
+                .trim();
+
+        context.queue(command);
+        historyIndex = 0;
+        resetBuffer();
     }
 
     private void increment() {
@@ -101,14 +115,9 @@ public class InputBar {
     }
 
     private void resetBuffer() {
-        this.buffer.ensureCapacity(columns);
-        this.buffer.setLength(columns);
-        for (int i = 0; i < columns; i++) {
-            this.buffer.setCharAt(i, ' ');
-        }
-        for (int i = 0; i < indicator.length() && i < columns; i++) {
-            this.buffer.setCharAt(i, indicator.charAt(i));
-        }
+        buffer.setLength(0);
+        buffer.append(indicator);
+        buffer.append(" ".repeat(columns - indicator.length()));
         this.index = indicator.length();
     }
 
