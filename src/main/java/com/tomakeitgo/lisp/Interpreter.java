@@ -12,7 +12,7 @@ public class Interpreter {
 
     public static SContext createSContext() {
         SContext sContext = new SContext();
-        sContext.register("if", new IfOperator(sContext));
+        sContext.register("if", new IfOperator());
         sContext.register("isEqual", new IsEqualOperator());
 
         sContext.register("roll", new RollOperator());
@@ -56,9 +56,11 @@ public class Interpreter {
                 } else if (key instanceof SExpression.SList keyList) {
                     key = eval(keyList, definitions);
                 }
-
-                if (key instanceof SExpression.Lambda lambda) {
-                    yield lambda.eval(rest, this, definitions);
+                if (key instanceof IfOperator ifOperator) {
+                    yield ifOperator.eval(rest, this, definitions);
+                } else if (key instanceof SExpression.Lambda lambda) {
+                    List<SExpression> args = rest.stream().map(i -> eval(i, definitions)).toList();
+                    yield lambda.eval(args, this, definitions);
                 }
 
                 yield l;
@@ -95,21 +97,15 @@ public class Interpreter {
     }
 
     private static class IfOperator extends SExpression.Lambda {
-        private final SContext sContext;
-
-        public IfOperator(SContext sContext) {
-            this.sContext = sContext;
-        }
-
         @Override
         public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
             if (rest.size() != 3) {
                 return new Error("if requires three arguments");
             }
-            if (TRUE.equals(interpreter.eval(rest.getFirst(), sContext))) {
-                return rest.get(1);
+            if (TRUE.equals(interpreter.eval(rest.getFirst(), definitions))) {
+                return interpreter.eval(rest.get(1), definitions);
             } else {
-                return rest.get(2);
+                return interpreter.eval(rest.get(2), definitions);
             }
         }
     }
@@ -158,7 +154,7 @@ public class Interpreter {
             }
         }
     }
-    
+
     private static class SubNumberOperator extends SExpression.Lambda {
         @Override
         public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
@@ -173,7 +169,7 @@ public class Interpreter {
             }
         }
     }
-    
+
     private static class MulNumberOperator extends SExpression.Lambda {
         @Override
         public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
@@ -188,6 +184,7 @@ public class Interpreter {
             }
         }
     }
+
     private static class DivNumberOperator extends SExpression.Lambda {
         @Override
         public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
