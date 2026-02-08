@@ -35,8 +35,24 @@ public class InputBar {
                     buffer.setLength(columns);
                 }
             }
-            case ArrowLeft -> decrement();
-            case ArrowRight -> increment();
+            case ArrowLeft -> {
+                if (stroke.isAltDown()) {
+                    index = indicator.length();
+                } else {
+                    decrement();
+                }
+            }
+            case ArrowRight -> {
+                if (stroke.isAltDown()) {
+                    int end = buffer.length();
+                    while (end > indicator.length() && Character.isSpaceChar(buffer.charAt(end - 1))) {
+                        end--;
+                    }
+                    index = end;
+                } else {
+                    increment();
+                }
+            }
             case ArrowUp -> {
                 ArrayList<String> commands = context.getCommands();
                 if (commands.size() > historyIndex) {
