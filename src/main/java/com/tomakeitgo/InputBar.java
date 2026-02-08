@@ -24,12 +24,16 @@ public class InputBar {
     public void input(KeyStroke stroke) {
         switch (stroke.getKeyType()) {
             case Character -> {
-                buffer.setCharAt(index, stroke.getCharacter());
+                buffer.insert(index, stroke.getCharacter());
+                buffer.setLength(columns);
                 increment();
             }
             case Backspace -> {
-                decrement();
-                buffer.setCharAt(index, ' ');
+                if (index > indicator.length()) {
+                    decrement();
+                    buffer.deleteCharAt(index);
+                    buffer.setLength(columns);
+                }
             }
             case ArrowLeft -> decrement();
             case ArrowRight -> increment();
