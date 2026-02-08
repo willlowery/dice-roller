@@ -11,7 +11,8 @@ import java.io.IOException;
 public class Screen {
     private final Terminal terminal;
     private final InputBar inputBar;
-    private final Separator clockSeparator = new Separator(1);
+    private final TabBar tabBar;
+    private final Separator clockSeparator = new Separator(2);
     private final OutputLog outputLog;
     private final Clock clockBar = new Clock();
     private final Context context;
@@ -21,10 +22,14 @@ public class Screen {
         this.context = context;
         this.inputBar = new InputBar(context);
         this.outputLog = new OutputLog(context);
+        this.tabBar = new TabBar(context);
 
         context.addAvailableActive(inputBar);
         context.addAvailableActive(outputLog);
         context.setActive(inputBar);
+
+        tabBar.addTab("Input", inputBar);
+        tabBar.addTab("Output", outputLog);
     }
 
     public void input(KeyStroke stroke) throws IOException {
@@ -40,6 +45,7 @@ public class Screen {
 
     public void resize(Terminal t, TerminalSize size) {
         clockBar.resize(size);
+        tabBar.resize(size);
         clockSeparator.resize(size);
         outputLog.resize(size);
         inputBar.resize(size);
@@ -53,6 +59,7 @@ public class Screen {
 
     public void draw() throws IOException {
         clockBar.draw(terminal);
+        tabBar.draw(terminal);
         clockSeparator.draw(terminal);
         outputLog.draw(terminal);
         inputBar.draw(terminal);

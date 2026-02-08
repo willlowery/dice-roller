@@ -33,10 +33,10 @@ public class OutputLog {
         for (int i = 0; i < maxRows; i++) {
             if (i < displayLines.size() - offset) {
                 String line = displayLines.get(displayLines.size() - i - 1 - offset);
-                graphic.putString(new TerminalPosition(0, 2 + i), blankLine);
-                graphic.putString(new TerminalPosition(1, 2 + i), line);
+                graphic.putString(new TerminalPosition(0, 3 + i), blankLine);
+                graphic.putString(new TerminalPosition(1, 3 + i), line);
             } else {
-                graphic.putString(new TerminalPosition(0, 2 + i), blankLine);
+                graphic.putString(new TerminalPosition(0, 3 + i), blankLine);
             }
         }
     }
