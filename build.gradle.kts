@@ -2,6 +2,13 @@ plugins {
     id("java")
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+        vendor.set(JvmVendorSpec.ADOPTIUM)
+    }
+}
+
 group = "com.tomakeitgo"
 version = "1.0-SNAPSHOT"
 
