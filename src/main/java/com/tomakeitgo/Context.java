@@ -34,8 +34,11 @@ public class Context {
         SExpression exp = new Parser().parse(new Lexer().lex(command));
 
         var a = new Interpreter().eval(exp, SContext);
-        if (a != null)
+        if (a instanceof SExpression.SText text) {
+            commandOutput.add(text.value());
+        } else if (a != null) {
             commandOutput.add(a.toString());
+        }
     }
 
     public ArrayList<String> getCommands() {
