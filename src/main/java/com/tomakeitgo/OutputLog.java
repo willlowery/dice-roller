@@ -7,6 +7,7 @@ import com.googlecode.lanterna.terminal.Terminal;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class OutputLog {
     private final Context context;
@@ -27,22 +28,46 @@ public class OutputLog {
         var ind = context.isActive(this) ? "+" : "|";
 
         var blankLine = ind + " ".repeat(rowLength - 1);
-        var commands = context.getCommandOutput();
+        var displayLines = buildDisplayLines();
 
         for (int i = 0; i < maxRows; i++) {
-            if (i < commands.size() - offset) {
-                String command =  (commands.size() - i - offset) + ": " + commands.get(commands.size() - i - 1 - offset);
+            if (i < displayLines.size() - offset) {
+                String line = displayLines.get(displayLines.size() - i - 1 - offset);
                 graphic.putString(new TerminalPosition(0, 2 + i), blankLine);
-                graphic.putString(new TerminalPosition(1, 2 + i), command);
+                graphic.putString(new TerminalPosition(1, 2 + i), line);
             } else {
                 graphic.putString(new TerminalPosition(0, 2 + i), blankLine);
             }
         }
     }
 
+    private List<String> buildDisplayLines() {
+        var commands = context.getCommandOutput();
+        var displayLines = new ArrayList<String>();
+        int availableWidth = rowLength - 2; // account for indicator + space
+
+        for (int i = 0; i < commands.size(); i++) {
+            String prefix = (i + 1) + ": ";
+            String indent = " ".repeat(prefix.length());
+            String[] parts = commands.get(i).split("\n", -1);
+
+            for (String part : parts) {
+                int contentWidth = availableWidth - prefix.length();
+
+                List<String> reversed = Strings.chunk(part, contentWidth).reversed();
+                for (int j = 0; j < reversed.size(); j++) {
+                    String chunk = reversed.get(j);
+                    displayLines.add((j == reversed.size() - 1 ? prefix : indent) + chunk);
+                }
+            }
+        }
+
+        return displayLines;
+    }
+
     public void input(KeyStroke stroke) {
         switch (stroke.getKeyType()) {
-            case ArrowUp -> offset = Math.min(offset + 1, context.getCommandOutput().size());
+            case ArrowUp -> offset = Math.min(offset + 1, buildDisplayLines().size());
             case ArrowDown -> offset = Math.max(offset - 1, 0);
         }
     }
