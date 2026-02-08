@@ -1,12 +1,10 @@
 package com.tomakeitgo.lisp;
 
-import com.tomakeitgo.dice.Lexer;
+import com.tomakeitgo.lisp.operators.*;
 
 import java.util.List;
-import java.util.Random;
 
 public class Interpreter {
-    private static final Random random = new Random();
     public static final SExpression.SAtom TRUE = new SExpression.SAtom("true");
     public static final SExpression.SAtom FALSE = new SExpression.SAtom("false");
 
@@ -24,7 +22,7 @@ public class Interpreter {
         sContext.register("type/isError", new IsTypeOperator(SExpression.Error.class));
         sContext.register("type/isLambda", new IsTypeOperator(SExpression.Lambda.class));
 
-        sContext.register("text/concat", new TextConcat());
+        sContext.register("text/concat", new TextConcatOperator());
         sContext.register("number/add", new AddNumberOperator());
         sContext.register("number/sub", new SubNumberOperator());
         sContext.register("number/mul", new MulNumberOperator());
@@ -67,138 +65,6 @@ public class Interpreter {
 
                 yield l;
             }
-
         };
-    }
-
-    private static class RollOperator extends SExpression.Lambda {
-        @Override
-        public SExpression eval(List<SExpression> rest, Interpreter interpreter, com.tomakeitgo.lisp.SContext definitions) {
-            var rollText = ((SText) (rest).getFirst()).value();
-            var e = new com.tomakeitgo.dice.Parser().parse(new Lexer().lex(rollText));
-            var result = e.eval((side) -> random.nextInt(1, side + 1));
-            return new SText(result.describe() + ": " + result.getValue());
-        }
-    }
-
-    private static class TextConcat extends SExpression.Lambda {
-        @Override
-        public SExpression eval(
-                List<SExpression> rest,
-                Interpreter interpreter,
-                SContext definitions
-        ) {
-            StringBuilder value = new StringBuilder();
-            for (SExpression sExpression : rest) {
-                if (interpreter.eval(sExpression, definitions) instanceof SText text) {
-                    value.append(text.value());
-                }
-            }
-            return new SText(value.toString());
-        }
-    }
-
-    private static class IfOperator extends SExpression.Lambda {
-        @Override
-        public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-            if (rest.size() != 3) {
-                return new Error("if requires three arguments");
-            }
-            if (TRUE.equals(interpreter.eval(rest.getFirst(), definitions))) {
-                return interpreter.eval(rest.get(1), definitions);
-            } else {
-                return interpreter.eval(rest.get(2), definitions);
-            }
-        }
-    }
-
-    private static class IsEqualOperator extends SExpression.Lambda {
-        @Override
-        public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-            if (rest.size() < 2) return new Error("isEqual requires at least two arguments");
-
-            SExpression s = rest.getFirst();
-            for (SExpression sExpression : rest.subList(1, rest.size())) {
-                if (!sExpression.equals(s)) {
-                    return FALSE;
-                }
-            }
-            return TRUE;
-        }
-    }
-
-    private static class IsTypeOperator extends SExpression.Lambda {
-        private final Class<? extends SExpression> type;
-
-        private IsTypeOperator(Class<? extends SExpression> type) {
-            this.type = type;
-        }
-
-        @Override
-        public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-            if (rest.size() != 1) return new Error("requires one argument.");
-            return type.isInstance(rest.getFirst()) ? TRUE : FALSE;
-
-        }
-    }
-
-    private static class AddNumberOperator extends SExpression.Lambda {
-        @Override
-        public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-            if (rest.size() == 2) {
-                if (rest.get(0) instanceof SExpression.SNumber first && rest.get(1) instanceof SExpression.SNumber second) {
-                    return first.add(second);
-                } else {
-                    return new Error("requires two arguments of type Number");
-                }
-            } else {
-                return new Error("requires two arguments of type Number");
-            }
-        }
-    }
-
-    private static class SubNumberOperator extends SExpression.Lambda {
-        @Override
-        public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-            if (rest.size() == 2) {
-                if (rest.get(0) instanceof SExpression.SNumber first && rest.get(1) instanceof SExpression.SNumber second) {
-                    return first.sub(second);
-                } else {
-                    return new Error("requires two arguments of type Number");
-                }
-            } else {
-                return new Error("requires two arguments of type Number");
-            }
-        }
-    }
-
-    private static class MulNumberOperator extends SExpression.Lambda {
-        @Override
-        public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-            if (rest.size() == 2) {
-                if (rest.get(0) instanceof SExpression.SNumber first && rest.get(1) instanceof SExpression.SNumber second) {
-                    return first.mul(second);
-                } else {
-                    return new Error("requires two arguments of type Number");
-                }
-            } else {
-                return new Error("requires two arguments of type Number");
-            }
-        }
-    }
-
-    private static class DivNumberOperator extends SExpression.Lambda {
-        @Override
-        public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-            if (rest.size() == 2) {
-                if (rest.get(0) instanceof SExpression.SNumber first && rest.get(1) instanceof SExpression.SNumber second) {
-                    return first.div(second);
-                } else {
-                    return new Error("requires two arguments of type Number");
-                }
-            } else {
-                return new Error("requires two arguments of type Number");
-            }
-        }
     }
 }
