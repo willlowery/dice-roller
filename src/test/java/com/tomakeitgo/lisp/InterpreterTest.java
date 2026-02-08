@@ -176,6 +176,18 @@ class InterpreterTest {
         assertEquals(new SExpression.SNumber(new BigDecimal("0")), interpreter.eval(parse("(countdown 5)"), ctx));
     }
 
+    @Test
+    void helpReturnsText() {
+        var result = eval("(help)");
+        assertInstanceOf(SExpression.SText.class, result);
+        var text = ((SExpression.SText) result).value();
+        assertTrue(text.contains("if"));
+        assertTrue(text.contains("isEqual"));
+        assertTrue(text.contains("number/add"));
+        assertTrue(text.contains("lambda"));
+        assertTrue(text.contains("help"));
+    }
+
     private static SExpression eval(String input) {
         return new Interpreter().eval(parse(input), Interpreter.createSContext());
     }

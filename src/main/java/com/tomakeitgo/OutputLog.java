@@ -51,13 +51,15 @@ public class OutputLog {
             String indent = " ".repeat(prefix.length());
             String[] parts = commands.get(i).split("\n", -1);
 
-            for (String part : parts) {
+
+            for (int k = parts.length-1; k >= 0; k--) {
+                String part = parts[k];
                 int contentWidth = availableWidth - prefix.length();
 
                 List<String> reversed = Strings.chunk(part, contentWidth).reversed();
                 for (int j = 0; j < reversed.size(); j++) {
                     String chunk = reversed.get(j);
-                    displayLines.add((j == reversed.size() - 1 ? prefix : indent) + chunk);
+                    displayLines.add(((j == reversed.size() - 1) && k == 0 ? prefix : indent) + chunk);
                 }
             }
         }
