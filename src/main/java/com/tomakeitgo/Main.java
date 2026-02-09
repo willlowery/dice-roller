@@ -14,13 +14,13 @@ public class Main {
         
         Terminal terminal = defaultTerminalFactory.createTerminal();
         var screen = new Screen(terminal, context);
-        terminal.addResizeListener(screen::resize);
+        terminal.addResizeListener((t, size) -> screen.resize(size));
 
         terminal.enterPrivateMode();
         terminal.clearScreen();
         terminal.setCursorVisible(true);
         
-        screen.resize(terminal, terminal.getTerminalSize());
+        screen.resize(terminal.getTerminalSize());
         screen.draw();
         
         var inputThread = new Thread(() -> {
