@@ -23,12 +23,12 @@ public class Interpreter {
         sContext.register("type/isLambda", new IsTypeOperator(SExpression.Lambda.class));
 
         sContext.register("text/concat", new TextConcatOperator());
-        sContext.register("number/add", new AddNumberOperator());
-        sContext.register("number/sub", new SubNumberOperator());
-        sContext.register("number/mul", new MulNumberOperator());
-        sContext.register("number/div", new DivNumberOperator());
-        sContext.register("number/mod", new ModNumberOperator());
-        sContext.register("number/divInt", new DivIntNumberOperator());
+        sContext.register("number/add", new BinaryNumberOperator(SExpression.SNumber::add));
+        sContext.register("number/sub", new BinaryNumberOperator(SExpression.SNumber::sub));
+        sContext.register("number/mul", new BinaryNumberOperator(SExpression.SNumber::mul));
+        sContext.register("number/div", new BinaryNumberOperator(SExpression.SNumber::div));
+        sContext.register("number/mod", new BinaryNumberOperator(SExpression.SNumber::mod));
+        sContext.register("number/divInt", new BinaryNumberOperator(SExpression.SNumber::divInt));
 
         sContext.register("help", new HelpOperator());
 
