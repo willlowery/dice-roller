@@ -1,4 +1,4 @@
-package com.tomakeitgo;
+package com.tomakeitgo.ui;
 
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.input.KeyStroke;

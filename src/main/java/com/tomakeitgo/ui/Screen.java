@@ -1,9 +1,10 @@
-package com.tomakeitgo;
+package com.tomakeitgo.ui;
 
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.Terminal;
+import com.tomakeitgo.Context;
 
 import java.io.IOException;
 

@@ -1,9 +1,10 @@
-package com.tomakeitgo;
+package com.tomakeitgo.ui;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.Terminal;
+import com.tomakeitgo.Strings;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.function.Supplier;
 public class OutputLog implements TabPane.Panel {
     private final Supplier<List<String>> source;
     private int rowLength = 0;
-    private int maxRows = 20;
+    private final int maxRows = 20;
     private int offset = 0;
 
     public OutputLog(Supplier<List<String>> source) {
