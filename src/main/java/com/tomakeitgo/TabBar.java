@@ -9,29 +9,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TabBar {
-    private final Context context;
-    private final List<Tab> tabs = new ArrayList<>();
+    private final List<String> labels = new ArrayList<>();
     private int columns = 0;
 
-    public TabBar(Context context) {
-        this.context = context;
-    }
-
-    public void addTab(String label, Object panel) {
-        tabs.add(new Tab(label, panel));
+    public void addTab(String label) {
+        labels.add(label);
     }
 
     public void resize(TerminalSize size) {
         this.columns = size.getColumns();
     }
 
-    public void draw(Terminal terminal) throws IOException {
+    public void draw(Terminal terminal, int activeTab) throws IOException {
         var sb = new StringBuilder();
-        for (Tab tab : tabs) {
-            if (context.isActive(tab.panel)) {
-                sb.append("[ ").append(tab.label).append(" ] ");
+        for (int i = 0; i < labels.size(); i++) {
+            if (i == activeTab) {
+                sb.append("[ ").append(labels.get(i)).append(" ] ");
             } else {
-                sb.append("  ").append(tab.label).append("   ");
+                sb.append("  ").append(labels.get(i)).append("   ");
             }
         }
         String line = sb.toString();
@@ -42,6 +37,4 @@ public class TabBar {
                 .newTextGraphics()
                 .putString(new TerminalPosition(0, 1), line);
     }
-
-    private record Tab(String label, Object panel) {}
 }

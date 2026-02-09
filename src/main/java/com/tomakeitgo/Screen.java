@@ -11,30 +11,23 @@ import java.io.IOException;
 public class Screen {
     private final Terminal terminal;
     private final InputBar inputBar;
-    private final TabBar tabBar;
     private final Separator clockSeparator = new Separator(2);
-    private final OutputLog outputLog;
+    private final TabPane tabPane;
     private final Clock clockBar = new Clock();
     private final Context context;
-    private final ConsoleLog consoleLog;
 
-    public Screen(Terminal terminal, Context context)  {
+    public Screen(Terminal terminal, Context context) {
         this.terminal = terminal;
         this.context = context;
         this.inputBar = new InputBar(context);
-        this.outputLog = new OutputLog(context);
-        this.tabBar = new TabBar(context);
-        consoleLog = new ConsoleLog(context);
+        this.tabPane = new TabPane();
+
+        tabPane.addTab("Output", new OutputLog(context::getCommandOutput));
+        tabPane.addTab("Console", new OutputLog(context::getConsoleLog));
 
         context.addAvailableActive(inputBar);
-        context.addAvailableActive(outputLog);
-        context.addAvailableActive(consoleLog);
-
+        context.addAvailableActive(tabPane);
         context.setActivePane(inputBar);
-
-
-        tabBar.addTab("Output", outputLog);
-        tabBar.addTab("Console", consoleLog);
     }
 
     public void input(KeyStroke stroke) throws IOException {
@@ -42,20 +35,15 @@ public class Screen {
             context.tabActive();
         } else if (context.isActive(inputBar)) {
             inputBar.input(stroke);
-        } else if (context.isActive(outputLog)) {
-            outputLog.input(stroke);
+        } else if (context.isActive(tabPane)) {
+            tabPane.input(stroke);
         }
     }
 
-
     public void resize(TerminalSize size) {
         clockBar.resize(size);
-        tabBar.resize(size);
         clockSeparator.resize(size);
-
-        consoleLog.resize(size);
-        outputLog.resize(size);
-
+        tabPane.resize(size);
         inputBar.resize(size);
 
         try {
@@ -67,18 +55,10 @@ public class Screen {
 
     public void draw() throws IOException {
         clockBar.draw(terminal);
-        tabBar.draw(terminal);
+        tabPane.draw(terminal, context.isActive(tabPane));
         clockSeparator.draw(terminal);
-
-        if (context.isActive(consoleLog)) {
-            consoleLog.draw(terminal);
-        } else {
-            outputLog.draw(terminal);
-        }
-
         inputBar.draw(terminal);
 
         terminal.flush();
     }
-
 }

@@ -8,24 +8,25 @@ import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
-public class OutputLog {
-    private final Context context;
+public class OutputLog implements TabPane.Panel {
+    private final Supplier<List<String>> source;
     private int rowLength = 0;
     private int maxRows = 20;
     private int offset = 0;
 
-    public OutputLog(Context context) {
-        this.context = context;
+    public OutputLog(Supplier<List<String>> source) {
+        this.source = source;
     }
 
     public void resize(TerminalSize size) {
         this.rowLength = size.getColumns();
     }
 
-    public void draw(Terminal terminal) throws IOException {
+    public void draw(Terminal terminal, boolean focused) throws IOException {
         var graphic = terminal.newTextGraphics();
-        var ind = context.isActive(this) ? "+" : "|";
+        var ind = focused ? "+" : "|";
 
         var blankLine = ind + " ".repeat(rowLength - 1);
         var displayLines = buildDisplayLines();
@@ -42,7 +43,7 @@ public class OutputLog {
     }
 
     private List<String> buildDisplayLines() {
-        var commands = context.getCommandOutput();
+        var commands = source.get();
         var displayLines = new ArrayList<String>();
         int availableWidth = rowLength - 2; // account for indicator + space
 
