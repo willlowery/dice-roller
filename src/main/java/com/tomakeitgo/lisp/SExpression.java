@@ -52,29 +52,33 @@ public sealed interface SExpression {
 
     non-sealed class Lambda implements SExpression {
         private final SList arguments;
-        private final SExpression expression;
-        private final SContext SContext;
+        private final List<SExpression> expression;
+        private final SContext context;
 
         public Lambda() {
             arguments = null;
             expression = null;
-            SContext = null;
+            context = null;
         }
 
-        public Lambda(List<SExpression> remaining, SContext SContext) {
+        public Lambda(List<SExpression> remaining, SContext context) {
             this.arguments = (SList) remaining.getFirst();
-            this.expression = remaining.get(1);
-            this.SContext = SContext.copy();
+            this.expression = remaining;
+            this.context = context.copy();
         }
 
         public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
             for (int i = 0; i < arguments.value().size(); i++) {
                 var arg = arguments.value().get(i);
                 var value = rest.get(i);
-                SContext.register(arg, value);
+                context.register(arg, value);
             }
 
-            return interpreter.eval(expression, SContext);
+            SExpression result = new Error("Lambda body needs at least one statement");
+            for (SExpression expression : expression) {
+                result = interpreter.eval(expression, context);
+            }
+            return result;
         }
 
         @Override

@@ -16,13 +16,13 @@ public class Context {
     private final ArrayList<String> commandOutput = new ArrayList<>();
     private int activePane;
     private final List<Object> panes = new ArrayList<>();
-    private final SContext SContext = Interpreter.createSContext();
+    private final SContext listContext = Interpreter.createSContext();
 
     public Context() {
-        SContext.register(new SExpression.SAtom("host/send"), new ContextCallBackOperator(this));
-        new Interpreter().eval(parse("(def log (lambda (x) (host/send 'log' x)))"), SContext);
-        new Interpreter().eval(parse("(def clear (lambda () (host/send 'clear')))"), SContext);
-        new Interpreter().eval(parse("(def quit (lambda () (host/send 'quit')))"), SContext);
+        listContext.register(new SExpression.SAtom("host/send"), new ContextCallBackOperator(this));
+        new Interpreter().eval(parse("(def log (lambda (x) (host/send 'log' x)))"), listContext);
+        new Interpreter().eval(parse("(def clear (lambda () (host/send 'clear')))"), listContext);
+        new Interpreter().eval(parse("(def quit (lambda () (host/send 'quit')))"), listContext);
     }
 
     public void shutdown() {
@@ -37,7 +37,7 @@ public class Context {
         commands.add(command);
         SExpression exp = parse(command);
 
-        var a = new Interpreter().eval(exp, SContext);
+        var a = new Interpreter().eval(exp, listContext);
         if (a instanceof SExpression.SText text) {
             commandOutput.add(text.value());
         } else if (a != null) {
