@@ -55,6 +55,8 @@ class InterpreterTest {
             "(number/sub 5 3),     2",
             "(number/mul 3 4),     12",
             "(number/div 12 4),    3",
+            "(number/mod 7 3),     1",
+            "(number/divInt 7 2),  3",
     })
     void arithmetic(String input, String expected) {
         assertEquals(new SExpression.SNumber(new BigDecimal(expected)), eval(input));
@@ -68,6 +70,10 @@ class InterpreterTest {
             "(number/mul 1)",
             "(number/div 'a' 1)",
             "(number/div 1)",
+            "(number/mod 'a' 1)",
+            "(number/mod 1)",
+            "(number/divInt 'a' 1)",
+            "(number/divInt 1)",
             "(type/isNumber 1 2)",
             "(isEqual 1)",
             "(if true 1)",
