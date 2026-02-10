@@ -9,6 +9,14 @@ import java.util.List;
 public class HelpOperator extends SExpression.Lambda {
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
+        SExpression expression = null;
+        if (rest.size() == 1 && rest.getFirst() instanceof SText s) {
+            expression = readHelpDoc(s.value());
+        }
+        if (expression != null) {
+            return expression;
+        }
+
         String help = String.join("\n",
                 "Available operations:",
                 "",
@@ -35,8 +43,25 @@ public class HelpOperator extends SExpression.Lambda {
                 "  list/rest   (list/rest x)                   get all items except the first",
                 "  def          (def name value)               define a binding",
                 "  lambda       (lambda (args) body)           create a function",
-                "  help         (help)                         show this help"
+                "  help         (help)                         show this help",
+                "  help         (help command)                 show the help for the command"
         );
         return new SExpression.SText(help);
+    }
+
+    private SExpression readHelpDoc(String value) {
+        SExpression expression;
+        try {
+            var helpDoc = this.getClass().getResourceAsStream("/help/en/" + value + ".txt");
+            if (helpDoc != null) {
+                expression = new SText(new String(helpDoc.readAllBytes()));
+                helpDoc.close();
+            } else {
+                expression = null;
+            }
+        } catch (Exception e) {
+            expression = new Error("Unable to read help file for: " + value);
+        }
+        return expression;
     }
 }

@@ -1,0 +1,13 @@
+roll: Text -> Text 
+
+Evaluates the text argument dice expression 
+and returns the text output of the roll as a formatted
+text. formula: result 
+
+Arithmetic is allowed and is notated using prefix notation.
+
+examples:
+(roll '1d4') -> '1D4: 4'
+(roll '+ 1d4 1') -> '+ 1D4 1: 2'
+
+

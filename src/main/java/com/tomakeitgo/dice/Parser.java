@@ -2,7 +2,6 @@ package com.tomakeitgo.dice;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -45,7 +44,7 @@ public class Parser {
         return (r) -> new DiceExpression.Result(true, "", 0);
     }
 
-    public V parseValue(List<Lexer.Token> tokens) {
+    private V parseValue(List<Lexer.Token> tokens) {
 
         if (tokens.size() >= 3) {
             if (!tokens.getFirst().getType().equals(Lexer.Token.Type.DIGITS)) {
@@ -116,8 +115,8 @@ public class Parser {
         Result eval(Rand rand);
 
         class Result {
-            private String description;
-            private boolean valid;
+            private final String description;
+            private final boolean valid;
             private final int value;
 
             public Result(boolean valid, String description, int value) {
