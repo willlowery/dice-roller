@@ -11,13 +11,9 @@ import java.util.ArrayList;
 
 public class InputBar {
     private final Context context;
-    private final String indicator = " > ";
-    private int index = indicator.length();
+    private final ScrollBuffer scrollBuffer = new ScrollBuffer(" > ");
     private int historyIndex = 0;
     private int location = 0;
-    private final StringBuilder buffer = new StringBuilder();
-    private int columns = 1024;
-    private int scroll = 0;
 
     public InputBar(Context context) {
         this.context = context;
@@ -25,8 +21,8 @@ public class InputBar {
 
     public void input(KeyStroke stroke) {
         switch (stroke.getKeyType()) {
-            case Character  -> insertCharacter(stroke.getCharacter());
-            case Backspace  -> backspace();
+            case Character  -> scrollBuffer.insert(stroke.getCharacter());
+            case Backspace  -> scrollBuffer.deleteBack();
             case ArrowLeft  -> moveLeft(stroke);
             case ArrowRight -> moveRight(stroke);
             case ArrowUp    -> historyBack();
@@ -35,43 +31,20 @@ public class InputBar {
         }
     }
 
-    private void insertCharacter(char c) {
-        int currentLength = buffer.length();
-        if(index > currentLength) {
-            buffer.setLength(index);
-            for (int i = currentLength; i < index; i++) {
-                buffer.setCharAt(i, ' ');
-            }
-        }
-        buffer.insert(index, c);
-        increment();
-        adjustScroll();
-    }
-
-    private void backspace() {
-        if (index > indicator.length()) {
-            decrement();
-            buffer.deleteCharAt(index);
-            adjustScroll();
-        }
-    }
-
     private void moveLeft(KeyStroke stroke) {
         if (stroke.isAltDown()) {
-            index = indicator.length();
+            scrollBuffer.moveCursorToStart();
         } else {
-            decrement();
+            scrollBuffer.moveCursorLeft();
         }
-        adjustScroll();
     }
 
     private void moveRight(KeyStroke stroke) {
         if (stroke.isAltDown()) {
-            index = buffer.length();
+            scrollBuffer.moveCursorToEnd();
         } else {
-            increment();
+            scrollBuffer.moveCursorRight();
         }
-        adjustScroll();
     }
 
     private void historyBack() {
@@ -84,7 +57,7 @@ public class InputBar {
 
     private void historyForward() {
         if (historyIndex == 0) {
-            resetBuffer();
+            scrollBuffer.reset();
         } else {
             historyIndex = Math.max(0, historyIndex - 1);
             loadHistory(historyIndex);
@@ -93,64 +66,32 @@ public class InputBar {
 
     private void loadHistory(int targetIndex) {
         ArrayList<String> commands = context.getCommands();
-        resetBuffer();
+        scrollBuffer.reset();
         if (targetIndex >= 0 && targetIndex < commands.size()) {
-            buffer.insert(indicator.length(), commands.get(commands.size() - targetIndex - 1));
+            scrollBuffer.setContent(commands.get(commands.size() - targetIndex - 1));
         }
-        adjustScroll();
     }
 
     private void submit() {
-        String command = buffer.substring(indicator.length()).trim();
+        String command = scrollBuffer.getText();
         context.queue(command);
         historyIndex = 0;
-        resetBuffer();
-    }
-
-    private void increment() {
-        index = Math.min(index + 1, buffer.length());
-    }
-
-    private void decrement() {
-        index = Math.max(index - 1, indicator.length());
-    }
-
-    private void adjustScroll() {
-        int visibleWidth = columns;
-        if (index < scroll) {
-            scroll = index;
-        } else if (index >= scroll + visibleWidth) {
-            scroll = index - visibleWidth + 1;
-        }
+        scrollBuffer.reset();
     }
 
     public void resize(TerminalSize size) {
-        this.columns = size.getColumns();
+        scrollBuffer.setVisibleWidth(size.getColumns());
         this.location = size.getRows();
-        adjustScroll();
-    }
-
-    private void resetBuffer() {
-        buffer.setLength(0);
-        buffer.append(indicator);
-        this.index = indicator.length();
-        this.scroll = 0;
     }
 
     public void draw(Terminal terminal) throws IOException {
         var ind = context.isActive(this) ? "+" : "|";
-        int visibleWidth = columns;
-        int end = Math.min(buffer.length(), scroll + visibleWidth);
-        String visible = buffer.substring(scroll, end);
-        if (visible.length() < visibleWidth) {
-            visible = visible + " ".repeat(visibleWidth - visible.length());
-        }
         terminal
                 .newTextGraphics()
                 .putString(
                         new TerminalPosition(0, location - 1),
-                        ind + visible
+                        ind + scrollBuffer.getVisibleSlice()
                 );
-        terminal.setCursorPosition(new TerminalPosition(index - scroll + 1, location - 1));
+        terminal.setCursorPosition(new TerminalPosition(scrollBuffer.getCursorScreenPosition() + 1, location - 1));
     }
 }
