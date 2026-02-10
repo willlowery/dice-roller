@@ -1,6 +1,13 @@
 package com.tomakeitgo.lisp;
 
 import com.tomakeitgo.lisp.operators.*;
+import com.tomakeitgo.lisp.operators.control.*;
+import com.tomakeitgo.lisp.operators.dice.*;
+import com.tomakeitgo.lisp.operators.list.*;
+import com.tomakeitgo.lisp.operators.number.*;
+import com.tomakeitgo.lisp.operators.system.*;
+import com.tomakeitgo.lisp.operators.text.*;
+import com.tomakeitgo.lisp.operators.type.*;
 
 import java.util.List;
 

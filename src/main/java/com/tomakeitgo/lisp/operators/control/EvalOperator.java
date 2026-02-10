@@ -1,4 +1,4 @@
-package com.tomakeitgo.lisp.operators;
+package com.tomakeitgo.lisp.operators.control;
 
 import com.tomakeitgo.lisp.Interpreter;
 import com.tomakeitgo.lisp.SContext;

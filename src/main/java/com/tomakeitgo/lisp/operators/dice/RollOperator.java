@@ -1,4 +1,4 @@
-package com.tomakeitgo.lisp.operators;
+package com.tomakeitgo.lisp.operators.dice;
 
 import com.tomakeitgo.dice.Lexer;
 import com.tomakeitgo.dice.Parser;
