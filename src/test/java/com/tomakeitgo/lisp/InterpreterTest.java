@@ -220,6 +220,31 @@ class InterpreterTest {
     }
 
     @Test
+    void isEmptyOnEmptyList() {
+        assertEquals(Interpreter.TRUE, eval("(list/isEmpty ())"));
+    }
+
+    @Test
+    void isEmptyOnNonEmptyList() {
+        assertEquals(Interpreter.FALSE, eval("(list/isEmpty (list/append () 1))"));
+    }
+
+    @Test
+    void isEmptyNotAList() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/isEmpty 42)"));
+    }
+
+    @Test
+    void isEmptyTooFewArgs() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/isEmpty)"));
+    }
+
+    @Test
+    void isEmptyTooManyArgs() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/isEmpty () ())"));
+    }
+
+    @Test
     void helpReturnsText() {
         var result = eval("(help)");
         assertInstanceOf(SExpression.SText.class, result);

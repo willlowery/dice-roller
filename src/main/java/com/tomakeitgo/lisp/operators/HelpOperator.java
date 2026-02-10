@@ -29,6 +29,7 @@ public class HelpOperator extends SExpression.Lambda {
                 "  number/mod   (number/mod a b)               remainder",
                 "  number/divInt (number/divInt a b)            integer division",
                 "  list/append  (list/append list items...)     append items to a list",
+                "  list/isEmpty (list/isEmpty x)                check if list is empty",
                 "  def          (def name value)               define a binding",
                 "  lambda       (lambda (args) body)           create a function",
                 "  help         (help)                         show this help"

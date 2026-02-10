@@ -30,6 +30,7 @@ public class Interpreter {
         sContext.register("number/mod", new BinaryNumberOperator(SExpression.SNumber::mod));
         sContext.register("number/divInt", new BinaryNumberOperator(SExpression.SNumber::divInt));
         sContext.register("list/append", new ListAppendOperator());
+        sContext.register("list/isEmpty", new IsEmptyOperator());
         sContext.register("help", new HelpOperator());
 
         return sContext;
