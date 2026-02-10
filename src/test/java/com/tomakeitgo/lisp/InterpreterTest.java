@@ -245,6 +245,31 @@ class InterpreterTest {
     }
 
     @Test
+    void firstReturnsFirstItem() {
+        assertEquals(new SExpression.SNumber(new BigDecimal("1")), eval("(list/first (list/append () 1 2 3))"));
+    }
+
+    @Test
+    void firstOnEmptyList() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/first ())"));
+    }
+
+    @Test
+    void firstNotAList() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/first 42)"));
+    }
+
+    @Test
+    void firstTooFewArgs() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/first)"));
+    }
+
+    @Test
+    void firstTooManyArgs() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/first (list/append () 1) (list/append () 2))"));
+    }
+
+    @Test
     void helpReturnsText() {
         var result = eval("(help)");
         assertInstanceOf(SExpression.SText.class, result);
