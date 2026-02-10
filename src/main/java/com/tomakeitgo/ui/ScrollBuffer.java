@@ -13,13 +13,6 @@ public class ScrollBuffer {
     }
 
     public void insert(char c) {
-        int currentLength = buffer.length();
-        if (cursor > currentLength) {
-            buffer.setLength(cursor);
-            for (int i = currentLength; i < cursor; i++) {
-                buffer.setCharAt(i, ' ');
-            }
-        }
         buffer.insert(cursor, c);
         moveCursorRight();
         adjustScroll();
