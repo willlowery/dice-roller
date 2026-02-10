@@ -12,11 +12,12 @@ import java.util.ArrayList;
 public class InputBar {
     private final Context context;
     private final String indicator = " > ";
-    private int index = indicator.length() ;
+    private int index = indicator.length();
     private int historyIndex = 0;
     private int location = 0;
     private final StringBuilder buffer = new StringBuilder();
     private int columns = 1024;
+    private int scroll = 0;
 
     public InputBar(Context context) {
         this.context = context;
@@ -35,16 +36,23 @@ public class InputBar {
     }
 
     private void insertCharacter(char c) {
+        int currentLength = buffer.length();
+        if(index > currentLength) {
+            buffer.setLength(index);
+            for (int i = currentLength; i < index; i++) {
+                buffer.setCharAt(i, ' ');
+            }
+        }
         buffer.insert(index, c);
-        buffer.setLength(columns);
         increment();
+        adjustScroll();
     }
 
     private void backspace() {
         if (index > indicator.length()) {
             decrement();
             buffer.deleteCharAt(index);
-            buffer.setLength(columns);
+            adjustScroll();
         }
     }
 
@@ -54,18 +62,16 @@ public class InputBar {
         } else {
             decrement();
         }
+        adjustScroll();
     }
 
     private void moveRight(KeyStroke stroke) {
         if (stroke.isAltDown()) {
-            int end = buffer.length();
-            while (end > indicator.length() && Character.isSpaceChar(buffer.charAt(end - 1))) {
-                end--;
-            }
-            index = end;
+            index = buffer.length();
         } else {
             increment();
         }
+        adjustScroll();
     }
 
     private void historyBack() {
@@ -91,14 +97,11 @@ public class InputBar {
         if (targetIndex >= 0 && targetIndex < commands.size()) {
             buffer.insert(indicator.length(), commands.get(commands.size() - targetIndex - 1));
         }
+        adjustScroll();
     }
 
     private void submit() {
-        String command = buffer
-                .substring(indicator.length())
-                .replace((char) 0, ' ')
-                .trim();
-
+        String command = buffer.substring(indicator.length()).trim();
         context.queue(command);
         historyIndex = 0;
         resetBuffer();
@@ -112,27 +115,42 @@ public class InputBar {
         index = Math.max(index - 1, indicator.length());
     }
 
+    private void adjustScroll() {
+        int visibleWidth = columns;
+        if (index < scroll) {
+            scroll = index;
+        } else if (index >= scroll + visibleWidth) {
+            scroll = index - visibleWidth + 1;
+        }
+    }
+
     public void resize(TerminalSize size) {
         this.columns = size.getColumns();
         this.location = size.getRows();
-        resetBuffer();
+        adjustScroll();
     }
 
     private void resetBuffer() {
         buffer.setLength(0);
         buffer.append(indicator);
-        buffer.append(" ".repeat(columns - indicator.length()));
         this.index = indicator.length();
+        this.scroll = 0;
     }
 
     public void draw(Terminal terminal) throws IOException {
-        var ind = context.isActive(this) ? "+" : "|" ;
+        var ind = context.isActive(this) ? "+" : "|";
+        int visibleWidth = columns;
+        int end = Math.min(buffer.length(), scroll + visibleWidth);
+        String visible = buffer.substring(scroll, end);
+        if (visible.length() < visibleWidth) {
+            visible = visible + " ".repeat(visibleWidth - visible.length());
+        }
         terminal
                 .newTextGraphics()
                 .putString(
                         new TerminalPosition(0, location - 1),
-                        ind + buffer.toString().replace((char) 0, ' ')
+                        ind + visible
                 );
-        terminal.setCursorPosition(new TerminalPosition(index+1, location - 1));
+        terminal.setCursorPosition(new TerminalPosition(index - scroll + 1, location - 1));
     }
 }
