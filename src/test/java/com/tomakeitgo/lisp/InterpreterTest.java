@@ -302,6 +302,13 @@ class InterpreterTest {
     void restTooManyArgs() {
         assertInstanceOf(SExpression.Error.class, eval("(list/rest (list/append () 1) (list/append () 2))"));
     }
+    
+    @Test
+    void testEval(){
+        assertInstanceOf(SExpression.Error.class, eval("(eval)"));
+        assertEquals(eval("1"), eval("(eval 1)"));
+        assertEquals(eval("'1'"), eval("(eval '1')"));
+    }
 
     @Test
     void helpReturnsText() {

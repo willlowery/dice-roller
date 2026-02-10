@@ -10,6 +10,8 @@ public class Interpreter {
 
     public static SContext createSContext() {
         SContext sContext = new SContext();
+        sContext.register("eval", new EvalOperator());
+        
         sContext.register("if", new IfOperator());
         sContext.register("isEqual", new IsEqualOperator());
 
