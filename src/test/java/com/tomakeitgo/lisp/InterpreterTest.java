@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -180,6 +181,42 @@ class InterpreterTest {
         var ctx = Interpreter.createSContext();
         interpreter.eval(parse("(def countdown (lambda (n) (if (isEqual n 0 ) 0 (countdown (number/sub n 1 )) )))"), ctx);
         assertEquals(new SExpression.SNumber(new BigDecimal("0")), interpreter.eval(parse("(countdown 5)"), ctx));
+    }
+
+    @Test
+    void listAppendSingle() {
+        var result = eval("(list/append () 1)");
+        assertEquals(new SExpression.SList(java.util.List.of(new SExpression.SNumber(new BigDecimal("1")))), result);
+    }
+
+    @Test
+    void listAppendMultiple() {
+        var result = eval("(list/append () 1 2 3)");
+        assertEquals(new SExpression.SList(java.util.List.of(
+                new SExpression.SNumber(new BigDecimal("1")),
+                new SExpression.SNumber(new BigDecimal("2")),
+                new SExpression.SNumber(new BigDecimal("3"))
+        )), result);
+    }
+
+    @Test
+    void listAppendToExisting() {
+        var result = eval("((lambda (xs) (list/append xs 3)) (list/append () 1 2))");
+        assertEquals(new SExpression.SList(List.of(
+                new SExpression.SNumber(new BigDecimal("1")),
+                new SExpression.SNumber(new BigDecimal("2")),
+                new SExpression.SNumber(new BigDecimal("3"))
+        )), result);
+    }
+
+    @Test
+    void listAppendNotAList() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/append 1 2)"));
+    }
+
+    @Test
+    void listAppendTooFewArgs() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/append ())"));
     }
 
     @Test
