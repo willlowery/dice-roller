@@ -270,6 +270,40 @@ class InterpreterTest {
     }
 
     @Test
+    void restReturnsRemainingItems() {
+        var result = eval("(list/rest (list/append () 1 2 3))");
+        assertEquals(new SExpression.SList(List.of(
+                new SExpression.SNumber(new BigDecimal("2")),
+                new SExpression.SNumber(new BigDecimal("3"))
+        )), result);
+    }
+
+    @Test
+    void restOfSingleElementList() {
+        assertEquals(new SExpression.SList(List.of()), eval("(list/rest (list/append () 1))"));
+    }
+
+    @Test
+    void restOnEmptyList() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/rest ())"));
+    }
+
+    @Test
+    void restNotAList() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/rest 42)"));
+    }
+
+    @Test
+    void restTooFewArgs() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/rest)"));
+    }
+
+    @Test
+    void restTooManyArgs() {
+        assertInstanceOf(SExpression.Error.class, eval("(list/rest (list/append () 1) (list/append () 2))"));
+    }
+
+    @Test
     void helpReturnsText() {
         var result = eval("(help)");
         assertInstanceOf(SExpression.SText.class, result);

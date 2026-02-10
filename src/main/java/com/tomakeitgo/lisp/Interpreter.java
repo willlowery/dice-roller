@@ -32,6 +32,7 @@ public class Interpreter {
         sContext.register("list/append", new ListAppendOperator());
         sContext.register("list/isEmpty", new IsEmptyOperator());
         sContext.register("list/first", new ListFirstOperator());
+        sContext.register("list/rest", new ListRestOperator());
         sContext.register("help", new HelpOperator());
 
         return sContext;
