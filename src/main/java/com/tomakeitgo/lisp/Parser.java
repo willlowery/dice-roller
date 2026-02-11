@@ -5,12 +5,23 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Parser {
+    public List<SExpression> parseAll(List<Lexer.Token> expressions) {
+
+        LinkedList<Lexer.Token> toProcess = new LinkedList<>(expressions);
+        ArrayList<SExpression> list = new ArrayList<>();
+        while (!toProcess.isEmpty()) {
+            SExpression parse = parse(toProcess);
+            if (parse == null) break;
+            list.add(parse);
+        }
+        return list;
+    }
 
     public SExpression parse(List<Lexer.Token> tokens) {
         if (tokens.isEmpty()) return null;
         return parse(new LinkedList<>(tokens));
     }
-    
+
 
     private SExpression parse(LinkedList<Lexer.Token> toProcess) {
         if (toProcess.isEmpty()) return null;
@@ -33,5 +44,5 @@ public class Parser {
         }
         return null;
     }
-    
+
 }

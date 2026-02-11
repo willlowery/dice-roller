@@ -101,14 +101,14 @@ public class Lexer {
                 }
                 
                 tokens.add(new Token(Token.Type.NUMBER, value.toString()));
-            } else if (Character.isSpaceChar(input.charAt(i))) {
-                while (i < input.length() && Character.isSpaceChar(input.charAt(i))) {
+            } else if (Character.isWhitespace(input.charAt(i))) {
+                while (i < input.length() && Character.isWhitespace(input.charAt(i))) {
                     i++;
                 }
             } else {
                 StringBuilder value = new StringBuilder();
                 while (i < input.length() &&
-                        !Character.isSpaceChar(input.charAt(i)) &&
+                        !Character.isWhitespace(input.charAt(i)) &&
                         input.charAt(i) != '(' && input.charAt(i) != ')'
                 ) {
                     value.append(input.charAt(i));
