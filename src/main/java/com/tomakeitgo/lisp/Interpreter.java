@@ -31,7 +31,7 @@ public class Interpreter {
         sContext.register("type/isText", new IsTypeOperator(SText.class));
         sContext.register("type/isAtom", new IsTypeOperator(SAtom.class));
         sContext.register("type/isNumber", new IsTypeOperator(SNumber.class));
-        sContext.register("type/isError", new IsTypeOperator(Error.class));
+        sContext.register("type/isError", new IsTypeOperator(SExpression.Error.class));
         sContext.register("type/isLambda", new IsTypeOperator(Lambda.class));
         
         sContext.register("text/concat", new TextConcatOperator());
