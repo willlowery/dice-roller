@@ -7,6 +7,7 @@ import com.tomakeitgo.lisp.SContext;
 import com.tomakeitgo.lisp.SExpression;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Context {
@@ -16,13 +17,17 @@ public class Context {
     private final ArrayList<String> commandOutput = new ArrayList<>();
     private int activePane;
     private final List<Object> panes = new ArrayList<>();
-    private final SContext listContext = Interpreter.createSContext();
+    private final SContext root = Interpreter.createSContext();
+    private SContext active = root;
+    private final HashMap<SExpression, SContext> contexts = new HashMap<>();
 
     public Context() {
-        listContext.register(new SExpression.SAtom("host/send"), new ContextCallBackOperator(this));
-        new Interpreter().eval(parse("(def log (lambda (x) (host/send 'log' x)))"), listContext);
-        new Interpreter().eval(parse("(def clear (lambda () (host/send 'clear')))"), listContext);
-        new Interpreter().eval(parse("(def quit (lambda () (host/send 'quit')))"), listContext);
+        contexts.put(new SExpression.SText("/"), root);
+        active.register(new SExpression.SAtom("host/send"), new ContextCallBackOperator(this));
+        new Interpreter().eval(parse("(def log (lambda (x) (host/send 'log' x)))"), active);
+        new Interpreter().eval(parse("(def clear (lambda () (host/send 'clear')))"), active);
+        new Interpreter().eval(parse("(def quit (lambda () (host/send 'quit')))"), active);
+        new Interpreter().eval(parse("(def swap (lambda (x) (host/send 'setContext' x)))"), active);
     }
 
     public void shutdown() {
@@ -37,7 +42,7 @@ public class Context {
         commands.add(command);
         SExpression exp = parse(command);
 
-        var a = new Interpreter().eval(exp, listContext);
+        var a = new Interpreter().eval(exp, active);
         if (a instanceof SExpression.SText text) {
             commandOutput.add(text.value());
         } else if (a != null) {
@@ -98,6 +103,12 @@ public class Context {
                     if (rest.size() > 1) {
                         context.getConsoleLog().add(rest.get(1).toString());
                     }
+                } else if (text.equalsIgnoreCase("setContext")) {
+                    context.active = context.contexts.computeIfAbsent(
+                            rest.get(1),
+                            (i) -> context.root.copy()
+                    );
+                    return new SText("Context set to " + rest.get(1).toString());
                 }
             }
 
