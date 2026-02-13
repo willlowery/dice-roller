@@ -38,6 +38,7 @@ public class HelpOperator extends SExpression.Lambda {
                 "  number/div   (number/div a b)               division",
                 "  number/mod   (number/mod a b)               remainder",
                 "  number/divInt (number/divInt a b)           integer division",
+                "  number/text  (number/text n)                convert number to text",
                 "  list/append  (list/append list items...)    append items to a list",
                 "  list/isEmpty (list/isEmpty x)               check if list is empty",
                 "  list/first  (list/first x)                  get first item of a list",

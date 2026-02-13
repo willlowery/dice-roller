@@ -346,6 +346,41 @@ class InterpreterTest {
     }
 
     @Test
+    void numberToTextInteger() {
+        assertEquals(new SExpression.SText("42"), eval("(number/text 42)"));
+    }
+
+    @Test
+    void numberToTextDecimal() {
+        assertEquals(new SExpression.SText("3.14"), eval("(number/text 3.14)"));
+    }
+
+    @Test
+    void numberToTextStripsTrailingZeros() {
+        assertEquals(new SExpression.SText("5"), eval("(number/text 5.00)"));
+    }
+
+    @Test
+    void numberToTextNotANumber() {
+        assertInstanceOf(SExpression.Error.class, eval("(number/text 'hello')"));
+    }
+
+    @Test
+    void numberToTextNoArgs() {
+        assertInstanceOf(SExpression.Error.class, eval("(number/text)"));
+    }
+
+    @Test
+    void numberToTextTooManyArgs() {
+        assertInstanceOf(SExpression.Error.class, eval("(number/text 1 2)"));
+    }
+
+    @Test
+    void numberToTextComposable() {
+        assertEquals(new SExpression.SText("n=7"), eval("(text/concat 'n=' (number/text 7))"));
+    }
+
+    @Test
     void helpReturnsText() {
         var result = eval("(help)");
         assertInstanceOf(SExpression.SText.class, result);

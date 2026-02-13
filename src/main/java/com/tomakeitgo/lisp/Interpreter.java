@@ -43,7 +43,8 @@ public class Interpreter {
         sContext.register("number/div", new BinaryNumberOperator(SNumber::div));
         sContext.register("number/mod", new BinaryNumberOperator(SNumber::mod));
         sContext.register("number/divInt", new BinaryNumberOperator(SNumber::divInt));
-        
+        sContext.register("number/text", new NumberToTextOperator());
+
         sContext.register("list/append", new ListAppendOperator());
         sContext.register("list/isEmpty", new IsEmptyOperator());
         sContext.register("list/first", new ListFirstOperator());
