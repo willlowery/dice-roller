@@ -85,7 +85,7 @@ public class Parser {
             for (int i = 0; i < numberOfDice; i++) {
                 total += r.random(numberOfSides);
             }
-            return new DiceExpression.Result(true, numberOfDice + "D" + numberOfSides, total);
+            return new DiceExpression.Result(true, numberOfDice + "D" + numberOfSides + "(" + total + ")", total);
         };
     }
 
