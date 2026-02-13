@@ -17,8 +17,19 @@ public class Lexer {
                 tokens.add(new Token(Token.Type.D, String.valueOf(c).toUpperCase()));
                 i++;
             } else if (c == '-') {
-                tokens.add(new Token(Token.Type.MINUS, String.valueOf(c).toUpperCase()));
-                i++;
+                if (i + 1 < input.length() && Character.isDigit(input.charAt(i + 1))) {
+                    StringBuilder buffer = new StringBuilder();
+                    buffer.append(c);
+                    i++;
+                    while (i < input.length() && Character.isDigit(input.charAt(i))) {
+                        buffer.append(input.charAt(i));
+                        i++;
+                    }
+                    tokens.add(new Token(Token.Type.DIGITS, buffer.toString()));
+                } else {
+                    tokens.add(new Token(Token.Type.MINUS, String.valueOf(c).toUpperCase()));
+                    i++;
+                }
             } else if (c == '+') {
                 tokens.add(new Token(Token.Type.PLUS, String.valueOf(c).toUpperCase()));
                 i++;

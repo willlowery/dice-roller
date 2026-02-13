@@ -46,6 +46,52 @@ class LexerTest {
         );
     }
 
+    @Test
+    void negativeNumberAtStart_expectSingleDigitsToken() {
+        assertEquals(tokens(t(Type.DIGITS, "-5")), lex("-5"));
+    }
+
+    @Test
+    void negativeNumberAtStartFollowedByPlus_expectNegativeDigitsThenPlus() {
+        assertEquals(tokens(
+                t(Type.DIGITS, "-5"),
+                t(Type.PLUS, "+"),
+                t(Type.DIGITS, "3")
+        ), lex("-5+3"));
+    }
+
+    @Test
+    void negativeNumberAfterOperator_expectNegativeDigits() {
+        assertEquals(tokens(
+                t(Type.DIGITS, "3"),
+                t(Type.PLUS, "+"),
+                t(Type.DIGITS, "-5")
+        ), lex("3+-5"));
+    }
+
+    @Test
+    void subtraction_expectMinusToken() {
+        assertEquals(tokens(
+                t(Type.DIGITS, "3"),
+                t(Type.DIGITS, "-5")
+        ), lex("3-5"));
+    }
+
+    @Test
+    void subtractionAfterDice_expectMinusToken() {
+        assertEquals(tokens(
+                t(Type.DIGITS, "1"),
+                t(Type.D, "D"),
+                t(Type.DIGITS, "6"),
+                t(Type.DIGITS, "-3")
+        ), lex("1d6-3"));
+    }
+
+    @Test
+    void minusAlone_expectMinusToken() {
+        assertEquals(tokens(t(Type.MINUS, "-")), lex("-"));
+    }
+
     List<Token> tokens(Token... tokens) {
         return List.of(tokens);
     }
