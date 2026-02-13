@@ -311,6 +311,41 @@ class InterpreterTest {
     }
 
     @Test
+    void condBasicMatch() {
+        assertEquals(new SExpression.SNumber(new BigDecimal("1")), eval("(cond (true 1))"));
+    }
+
+    @Test
+    void condMultiBranch() {
+        assertEquals(new SExpression.SNumber(new BigDecimal("2")), eval("(cond (false 1) (true 2))"));
+    }
+
+    @Test
+    void condWithExpressions() {
+        assertEquals(new SExpression.SText("b"), eval("(cond ((isEqual 1 2) 'a') ((isEqual 1 1) 'b'))"));
+    }
+
+    @Test
+    void condFirstMatchWins() {
+        assertEquals(new SExpression.SNumber(new BigDecimal("1")), eval("(cond (true 1) (true 2))"));
+    }
+
+    @Test
+    void condNoMatch() {
+        assertInstanceOf(SExpression.Error.class, eval("(cond (false 1))"));
+    }
+
+    @Test
+    void condInvalidClause() {
+        assertInstanceOf(SExpression.Error.class, eval("(cond true)"));
+    }
+
+    @Test
+    void condNoClauses() {
+        assertInstanceOf(SExpression.Error.class, eval("(cond)"));
+    }
+
+    @Test
     void helpReturnsText() {
         var result = eval("(help)");
         assertInstanceOf(SExpression.SText.class, result);

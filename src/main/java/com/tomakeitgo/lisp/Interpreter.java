@@ -23,6 +23,7 @@ public class Interpreter {
         sContext.register("eval", new EvalOperator());
 
         sContext.register("if", new IfOperator());
+        sContext.register("cond", new CondOperator());
         sContext.register("isEqual", new IsEqualOperator());
 
         sContext.register("roll", new RollOperator());
@@ -80,6 +81,8 @@ public class Interpreter {
                 }
                 if (key instanceof IfOperator ifOperator) {
                     yield ifOperator.eval(rest, this, definitions);
+                } else if (key instanceof CondOperator condOperator) {
+                    yield condOperator.eval(rest, this, definitions);
                 } else if (key instanceof Lambda lambda) {
                     List<SExpression> args = rest.stream().map(i -> eval(i, definitions)).toList();
                     yield lambda.eval(args, this, definitions);

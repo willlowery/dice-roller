@@ -22,6 +22,7 @@ public class HelpOperator extends SExpression.Lambda {
                 "",
                 "  eval         (eval ...)                     evaluate the given expressions and returns the last one",
                 "  if           (if condition then else)       conditional evaluation",
+                "  cond         (cond (test expr) ...)        multi-branch conditional",
                 "  isEqual      (isEqual a b ...)              equality check",
                 "  roll         (roll '2d6')                   dice roll",
                 "  type/isList  (type/isList x)                check if value is a list",
