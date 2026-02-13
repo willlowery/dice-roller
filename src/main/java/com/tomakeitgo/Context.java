@@ -1,10 +1,6 @@
 package com.tomakeitgo;
 
-import com.tomakeitgo.lisp.Interpreter;
-import com.tomakeitgo.lisp.Lexer;
-import com.tomakeitgo.lisp.Parser;
-import com.tomakeitgo.lisp.SContext;
-import com.tomakeitgo.lisp.SExpression;
+import com.tomakeitgo.lisp.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +48,10 @@ public class Context {
 
     private static SExpression parse(String command) {
         return new Parser().parse(new Lexer().lex(command));
+    }
+
+    static List<SExpression> parseAll(String command) {
+        return new Parser().parseAll(new Lexer().lex(command));
     }
 
     public ArrayList<String> getCommands() {

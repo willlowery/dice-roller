@@ -19,7 +19,7 @@ public class Interpreter {
     public static final SAtom FALSE = new SAtom("false");
 
     public static SContext createSContext() {
-        SContext sContext = new SContext();
+        SContext sContext = new SContext(null);
         sContext.register("eval", new EvalOperator());
 
         sContext.register("if", new IfOperator());
@@ -71,7 +71,7 @@ public class Interpreter {
                 var key = definitions.find(list.getFirst());
 
                 if (key.equals(new SAtom("def"))) {
-                    definitions.register(rest.get(0), rest.get(1));
+                    definitions.set(rest.get(0), eval(rest.get(1), definitions));
                     yield rest.get(0);
                 } else if (key.equals(new SAtom("lambda"))) {
                     yield new Lambda(rest, definitions);

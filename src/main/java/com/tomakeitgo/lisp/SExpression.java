@@ -68,6 +68,7 @@ public sealed interface SExpression {
         }
 
         public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
+            if (arguments.value().size() != rest.size()) return new Error("Invalid number of arguments");
             for (int i = 0; i < arguments.value().size(); i++) {
                 var arg = arguments.value().get(i);
                 var value = rest.get(i);
