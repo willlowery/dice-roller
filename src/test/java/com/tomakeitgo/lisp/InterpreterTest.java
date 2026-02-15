@@ -1,9 +1,6 @@
 package com.tomakeitgo.lisp;
 
-import com.tomakeitgo.lisp.SExpression.SAtom;
-import com.tomakeitgo.lisp.SExpression.SList;
-import com.tomakeitgo.lisp.SExpression.SNumber;
-import com.tomakeitgo.lisp.SExpression.SText;
+import com.tomakeitgo.lisp.SExpression.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -42,7 +39,7 @@ class InterpreterTest {
                 of(new SAtom("true"), "(isEqual 1 1)"),
                 of(new SAtom("false"), "(isEqual 1 2)"),
                 of(new SAtom("false"), "(isEqual 1 2)"),
-                of(new SExpression.SError("isEqual requires at least two arguments"), "(isEqual 1)"),
+                of(new SError("isEqual requires at least two arguments"), "(isEqual 1)"),
 
                 // type checks
                 of(new SAtom("true"), "(type/isNumber 42)"),
@@ -61,16 +58,16 @@ class InterpreterTest {
 
                 // text/toAtom
                 of(new SAtom("text"), "(text/toAtom 'text')"),
-                of(new SExpression.SError("toAtom requires exactly one argument of type text"), "(text/toAtom )"),
-                of(new SExpression.SError("toAtom requires exactly one argument of type text"), "(text/toAtom 1)"),
+                of(new SError("toAtom requires exactly one argument of type text"), "(text/toAtom )"),
+                of(new SError("toAtom requires exactly one argument of type text"), "(text/toAtom 1)"),
 
                 // number to text
                 of(new SText("42"), "(number/text 42)"),
                 of(new SText("3.14"), "(number/text 3.14)"),
                 of(new SText("5"), "(number/text 5.00)"),
-                of(new SExpression.SError("number/text requires exactly one argument"), "(number/text)"),
-                of(new SExpression.SError("number/text requires exactly one argument"), "(number/text 1 2)"),
-                of(new SExpression.SError("number/text requires a number argument"), "(number/text 'hello')"),
+                of(new SError("number/text requires exactly one argument"), "(number/text)"),
+                of(new SError("number/text requires exactly one argument"), "(number/text 1 2)"),
+                of(new SError("number/text requires a number argument"), "(number/text 'hello')"),
                 // def
                 of(new SNumber(BigDecimal.valueOf(5)), "(def x 5) x"),
                 of(new SNumber(BigDecimal.valueOf(2)), "(def x 1) (def x 2) x")
@@ -81,7 +78,7 @@ class InterpreterTest {
     @ParameterizedTest
     @MethodSource("errorCasesInputs")
     void errorCases(String input) {
-        assertInstanceOf(SExpression.SError.class, eval(input));
+        assertInstanceOf(SError.class, eval(input));
     }
 
     static Stream<Arguments> errorCasesInputs() {
@@ -129,7 +126,7 @@ class InterpreterTest {
 
     @Test
     void ifWrongArity() {
-        assertInstanceOf(SExpression.SError.class, eval("(if true 1)"));
+        assertInstanceOf(SError.class, eval("(if true 1)"));
     }
 
     @Test
@@ -197,12 +194,12 @@ class InterpreterTest {
 
     @Test
     void listAppendNotAList() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/append 1 2)"));
+        assertInstanceOf(SError.class, eval("(list/append 1 2)"));
     }
 
     @Test
     void listAppendTooFewArgs() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/append ())"));
+        assertInstanceOf(SError.class, eval("(list/append ())"));
     }
 
     @Test
@@ -217,17 +214,17 @@ class InterpreterTest {
 
     @Test
     void isEmptyNotAList() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/isEmpty 42)"));
+        assertInstanceOf(SError.class, eval("(list/isEmpty 42)"));
     }
 
     @Test
     void isEmptyTooFewArgs() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/isEmpty)"));
+        assertInstanceOf(SError.class, eval("(list/isEmpty)"));
     }
 
     @Test
     void isEmptyTooManyArgs() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/isEmpty () ())"));
+        assertInstanceOf(SError.class, eval("(list/isEmpty () ())"));
     }
 
     @Test
@@ -237,22 +234,22 @@ class InterpreterTest {
 
     @Test
     void firstOnEmptyList() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/first ())"));
+        assertInstanceOf(SError.class, eval("(list/first ())"));
     }
 
     @Test
     void firstNotAList() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/first 42)"));
+        assertInstanceOf(SError.class, eval("(list/first 42)"));
     }
 
     @Test
     void firstTooFewArgs() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/first)"));
+        assertInstanceOf(SError.class, eval("(list/first)"));
     }
 
     @Test
     void firstTooManyArgs() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/first (list/append () 1) (list/append () 2))"));
+        assertInstanceOf(SError.class, eval("(list/first (list/append () 1) (list/append () 2))"));
     }
 
     @Test
@@ -271,27 +268,27 @@ class InterpreterTest {
 
     @Test
     void restOnEmptyList() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/rest ())"));
+        assertInstanceOf(SError.class, eval("(list/rest ())"));
     }
 
     @Test
     void restNotAList() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/rest 42)"));
+        assertInstanceOf(SError.class, eval("(list/rest 42)"));
     }
 
     @Test
     void restTooFewArgs() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/rest)"));
+        assertInstanceOf(SError.class, eval("(list/rest)"));
     }
 
     @Test
     void restTooManyArgs() {
-        assertInstanceOf(SExpression.SError.class, eval("(list/rest (list/append () 1) (list/append () 2))"));
+        assertInstanceOf(SError.class, eval("(list/rest (list/append () 1) (list/append () 2))"));
     }
 
     @Test
     void testEval() {
-        assertInstanceOf(SExpression.SError.class, eval("(eval)"));
+        assertInstanceOf(SError.class, eval("(eval)"));
         assertEquals(eval("1"), eval("(eval 1)"));
         assertEquals(eval("'1'"), eval("(eval '1')"));
     }
@@ -318,17 +315,17 @@ class InterpreterTest {
 
     @Test
     void condNoMatch() {
-        assertInstanceOf(SExpression.SError.class, eval("(cond (false 1))"));
+        assertInstanceOf(SError.class, eval("(cond (false 1))"));
     }
 
     @Test
     void condInvalidClause() {
-        assertInstanceOf(SExpression.SError.class, eval("(cond true)"));
+        assertInstanceOf(SError.class, eval("(cond true)"));
     }
 
     @Test
     void condNoClauses() {
-        assertInstanceOf(SExpression.SError.class, eval("(cond)"));
+        assertInstanceOf(SError.class, eval("(cond)"));
     }
 
 
