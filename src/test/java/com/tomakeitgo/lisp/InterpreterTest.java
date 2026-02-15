@@ -70,7 +70,16 @@ class InterpreterTest {
                 of(new SError("number/text requires a number argument"), "(number/text 'hello')"),
                 // def
                 of(new SNumber(BigDecimal.valueOf(5)), "(def x 5) x"),
-                of(new SNumber(BigDecimal.valueOf(2)), "(def x 1) (def x 2) x")
+                of(new SNumber(BigDecimal.valueOf(2)), "(def x 1) (def x 2) x"),
+
+                // list/nth
+                of(new SNumber(new BigDecimal("1")), "(list/nth (list 1 2 3) 0)"),
+                of(new SNumber(new BigDecimal("3")), "(list/nth (list 1 2 3) 2)"),
+                of(new SError("list/nth index out of bounds"), "(list/nth (list 1 2 3) 3)"),
+                of(new SError("list/nth index out of bounds"), "(list/nth (list 1 2 3) -1)"),
+                of(new SError("list/nth requires a list as the first argument"), "(list/nth 42 0)"),
+                of(new SError("list/nth requires a number as the second argument"), "(list/nth (list 1) 'a')"),
+                of(new SError("list/nth requires exactly two arguments"), "(list/nth)")
         );
     }
 
