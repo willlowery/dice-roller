@@ -34,8 +34,11 @@ public sealed interface SExpression {
             return "Error: "+ message;
         }
     }
-
+    
     record SNumber(BigDecimal value) implements SExpression {
+        public SNumber(int value) {
+            this(new BigDecimal(value));    
+        }
 
         public SNumber add(SNumber value) {
             return new SNumber(this.value.add(value.value(), MathContext.DECIMAL128));

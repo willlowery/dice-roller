@@ -41,7 +41,7 @@ public class Parser {
             }
         }
 
-        return (r) -> new DiceExpression.Result(true, "", 0);
+        return (r) -> new DiceExpression.Result("", true,0,0,0);
     }
 
     private V parseValue(List<Lexer.Token> tokens) {
@@ -73,7 +73,16 @@ public class Parser {
     }
 
     public DiceExpression parseConstant(Lexer.Token token) {
-        return (r) -> new DiceExpression.Result(true, token.getValue(), Integer.parseInt(token.getValue()));
+        return (r) -> {
+            int value = Integer.parseInt(token.getValue());
+            return new DiceExpression.Result(
+                    token.getValue(),
+                    true,
+                    value,
+                    value,
+                    value
+            );
+        };
     }
 
     public DiceExpression parseDice(List<Lexer.Token> tokens) {
@@ -85,7 +94,13 @@ public class Parser {
             for (int i = 0; i < numberOfDice; i++) {
                 total += r.random(numberOfSides);
             }
-            return new DiceExpression.Result(true, numberOfDice + "D" + numberOfSides + "(" + total + ")", total);
+            return new DiceExpression.Result(
+                    numberOfDice + "D" + numberOfSides + "(" + total + ")",
+                    true,
+                    total,
+                    numberOfDice,
+                    numberOfDice * numberOfSides
+            );
         };
     }
 
@@ -104,8 +119,14 @@ public class Parser {
         @Override
         public Result eval(Rand rand) {
             var results = items.stream().map(i -> i.eval(rand)).toList();
-            var description = results.stream().map(Result::describe).collect(Collectors.joining(" ")).trim();
-            return new Result(true, symbol + " " + description, results.stream().map(Result::getValue).reduce(0, operation));
+            var description = results.stream().map(Result::description).collect(Collectors.joining(" ")).trim();
+
+            return new Result(symbol + " " + description,
+                    true,
+                    results.stream().map(Result::value).reduce(0, operation),
+                    results.stream().map(Result::min).reduce(0, operation),
+                    results.stream().map(Result::max).reduce(0, operation)
+            );
         }
     }
 
@@ -114,28 +135,8 @@ public class Parser {
 
         Result eval(Rand rand);
 
-        class Result {
-            private final String description;
-            private final boolean valid;
-            private final int value;
+        record Result(String description, boolean valid, int value, int min, int max) {
 
-            public Result(boolean valid, String description, int value) {
-                this.description = description;
-                this.valid = valid;
-                this.value = value;
-            }
-
-            public boolean valid() {
-                return valid;
-            }
-
-            public String describe() {
-                return description;
-            }
-
-            public int getValue() {
-                return value;
-            }
         }
 
         interface Rand {

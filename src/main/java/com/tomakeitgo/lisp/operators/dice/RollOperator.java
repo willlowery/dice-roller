@@ -19,8 +19,10 @@ public class RollOperator extends SExpression.Lambda {
         var e = new Parser().parse(new Lexer().lex(rollText));
         var result = e.eval((side) -> random.nextInt(1, side + 1));
         return new SExpression.SList(List.of(
-                new SNumber(new BigDecimal(result.getValue())), 
-                new SText(result.describe() + ": " + result.getValue())
+                new SNumber(new BigDecimal(result.value())), 
+                new SText(result.description() + ": " + result.value()),
+                new SNumber(result.min()),
+                new SNumber(result.max())
         ));
     }
 }
