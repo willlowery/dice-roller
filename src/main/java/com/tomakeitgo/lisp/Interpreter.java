@@ -25,6 +25,7 @@ public class Interpreter {
         sContext.register("if", new IfOperator());
         sContext.register("cond", new CondOperator());
         sContext.register("isEqual", new IsEqualOperator());
+        sContext.register("quote", new QuoteOperator());
 
         sContext.register("roll", new RollOperator());
 
@@ -36,6 +37,12 @@ public class Interpreter {
         sContext.register("type/isLambda", new IsTypeOperator(Lambda.class));
         
         sContext.register("text/concat", new TextConcatOperator());
+        sContext.register("text/error", new ToError());
+        
+        sContext.register("number/lt", new BinaryNumberOperator(SNumber::lt));
+        sContext.register("number/lte", new BinaryNumberOperator(SNumber::lte));
+        sContext.register("number/gt", new BinaryNumberOperator(SNumber::gt));
+        sContext.register("number/gte", new BinaryNumberOperator(SNumber::gte));
         
         sContext.register("number/add", new BinaryNumberOperator(SNumber::add));
         sContext.register("number/sub", new BinaryNumberOperator(SNumber::sub));
@@ -45,6 +52,7 @@ public class Interpreter {
         sContext.register("number/divInt", new BinaryNumberOperator(SNumber::divInt));
         sContext.register("number/text", new NumberToTextOperator());
 
+        sContext.register("list", new ListOperator());
         sContext.register("list/append", new ListAppendOperator());
         sContext.register("list/isEmpty", new IsEmptyOperator());
         sContext.register("list/first", new ListFirstOperator());

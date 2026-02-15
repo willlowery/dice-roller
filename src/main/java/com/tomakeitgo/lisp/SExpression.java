@@ -3,18 +3,36 @@ package com.tomakeitgo.lisp;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public sealed interface SExpression {
     record SList(List<SExpression> value) implements SExpression {
+        @Override
+        public String toString() {
+            return "(" + value.stream().map(Objects::toString).collect(Collectors.joining(" ")) +")";
+        }
     }
 
     record SAtom(String value) implements SExpression {
+        @Override
+        public String toString() {
+            return value;
+        }
     }
 
     record SText(String value) implements SExpression {
+        @Override
+        public String toString() {
+            return "'" + value.replace("'", "''") + "'";
+        }
     }
 
     record Error(String message) implements SExpression {
+        @Override
+        public String toString() {
+            return "Error: "+ message;
+        }
     }
 
     record SNumber(BigDecimal value) implements SExpression {
@@ -42,12 +60,31 @@ public sealed interface SExpression {
         public SExpression divInt(SNumber value) {
             return new SNumber(this.value.divideToIntegralValue(value.value(), MathContext.DECIMAL128));
         }
+        
+        public SExpression lt(SNumber value) {
+            return value().compareTo(value.value()) < 0 ? Interpreter.TRUE : Interpreter.FALSE;
+        }
+        
+        public SExpression lte(SNumber value) {
+            return value().compareTo(value.value()) <= 0 ? Interpreter.TRUE : Interpreter.FALSE;
+        }
+        
+        public SExpression gt(SNumber value) {
+            return value().compareTo(value.value()) > 0 ? Interpreter.TRUE : Interpreter.FALSE;
+        }
+        
+        public SExpression gte(SNumber value) {
+            return value().compareTo(value.value()) >= 0 ? Interpreter.TRUE : Interpreter.FALSE;
+        }
 
         static SNumber from(String value) {
             return new SNumber(new BigDecimal(value));
         }
 
-
+        @Override
+        public String toString() {
+            return value.stripTrailingZeros().toPlainString();
+        }
     }
 
     non-sealed class Lambda implements SExpression {
