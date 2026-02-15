@@ -38,6 +38,7 @@ public class Interpreter {
         
         sContext.register("text/concat", new TextConcatOperator());
         sContext.register("text/error", new ToError());
+        sContext.register("text/toAtom", new ToAtom());
         
         sContext.register("number/lt", new BinaryNumberOperator(SNumber::lt));
         sContext.register("number/lte", new BinaryNumberOperator(SNumber::lte));

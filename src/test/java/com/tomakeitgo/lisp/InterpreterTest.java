@@ -1,11 +1,15 @@
 package com.tomakeitgo.lisp;
 
+import com.tomakeitgo.lisp.SExpression.SAtom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,7 +30,7 @@ class InterpreterTest {
             case "NUMBER" -> assertEquals(new SExpression.SNumber(new BigDecimal(value)), result);
             case "TEXT" -> assertEquals(new SExpression.SText(value), result);
             case "LIST" -> assertEquals(new SExpression.SList(java.util.List.of()), result);
-            case "ATOM" -> assertEquals(new SExpression.SAtom(value), result);
+            case "ATOM" -> assertEquals(new SAtom(value), result);
         }
     }
 
@@ -47,7 +51,7 @@ class InterpreterTest {
             "(isEqual 1 2),  false",
     })
     void isEqual(String input, String expected) {
-        assertEquals(new SExpression.SAtom(expected), eval(input));
+        assertEquals(new SAtom(expected), eval(input));
     }
 
     @ParameterizedTest
@@ -92,7 +96,7 @@ class InterpreterTest {
             "(type/isNumber 'hi'),  false",
     })
     void typeChecks(String input, String expected) {
-        assertEquals(new SExpression.SAtom(expected), eval(input));
+        assertEquals(new SAtom(expected), eval(input));
     }
 
     @Test
@@ -390,6 +394,20 @@ class InterpreterTest {
         assertTrue(text.contains("number/add"));
         assertTrue(text.contains("lambda"));
         assertTrue(text.contains("help"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("toAtomInputs")
+    void testToAtom(SExpression expected, String input){
+        assertEquals(expected, eval(input));
+    }
+
+    static Stream<Arguments> toAtomInputs(){
+        return Stream.of(
+                Arguments.of(new SAtom("text"), "(text/toAtom 'text')"),
+                Arguments.of(new SExpression.Error("toAtom requires exactly one argument of type text"), "(text/toAtom )"),
+                Arguments.of(new SExpression.Error("toAtom requires exactly one argument of type text"), "(text/toAtom 1)")
+        );
     }
 
     private static SExpression eval(String input) {
