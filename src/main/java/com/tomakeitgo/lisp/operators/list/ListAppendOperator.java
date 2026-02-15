@@ -11,10 +11,10 @@ public class ListAppendOperator extends SExpression.Lambda {
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
         if (rest.size() < 2) {
-            return new Error("requires a list and at least one item to append");
+            return new SError("requires a list and at least one item to append");
         }
         if (!(rest.getFirst() instanceof SExpression.SList list)) {
-            return new Error("first argument must be a list");
+            return new SError("first argument must be a list");
         }
         var result = new ArrayList<>(list.value());
         result.addAll(rest.subList(1, rest.size()));

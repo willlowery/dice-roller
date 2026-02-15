@@ -28,7 +28,7 @@ public sealed interface SExpression {
         }
     }
 
-    record Error(String message) implements SExpression {
+    record SError(String message) implements SExpression {
         @Override
         public String toString() {
             return "Error: "+ message;
@@ -105,14 +105,14 @@ public sealed interface SExpression {
         }
 
         public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-            if (arguments.value().size() != rest.size()) return new Error("Invalid number of arguments");
+            if (arguments.value().size() != rest.size()) return new SError("Invalid number of arguments");
             for (int i = 0; i < arguments.value().size(); i++) {
                 var arg = arguments.value().get(i);
                 var value = rest.get(i);
                 context.register(arg, value);
             }
 
-            SExpression result = new Error("Lambda body needs at least one statement");
+            SExpression result = new SError("Lambda body needs at least one statement");
             for (SExpression expression : expression) {
                 result = interpreter.eval(expression, context);
             }

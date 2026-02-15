@@ -20,10 +20,10 @@ public class BinaryNumberOperator extends SExpression.Lambda {
             if (rest.get(0) instanceof SExpression.SNumber first && rest.get(1) instanceof SExpression.SNumber second) {
                 return operation.apply(first, second);
             } else {
-                return new Error("requires two arguments of type Number");
+                return new SError("requires two arguments of type Number");
             }
         } else {
-            return new Error("requires two arguments of type Number");
+            return new SError("requires two arguments of type Number");
         }
     }
 }

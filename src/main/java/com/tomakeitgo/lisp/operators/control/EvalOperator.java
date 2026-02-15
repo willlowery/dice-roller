@@ -10,7 +10,7 @@ public class EvalOperator extends SExpression.Lambda {
 
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-        SExpression result = new Error("No Items to evaluate");
+        SExpression result = new SError("No Items to evaluate");
         for (SExpression expression : rest) {
             result = interpreter.eval(expression, definitions);
         }

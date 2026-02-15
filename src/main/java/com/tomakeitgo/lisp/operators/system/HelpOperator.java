@@ -62,7 +62,7 @@ public class HelpOperator extends SExpression.Lambda {
                 expression = null;
             }
         } catch (Exception e) {
-            expression = new Error("Unable to read help file for: " + value);
+            expression = new SError("Unable to read help file for: " + value);
         }
         return expression;
     }

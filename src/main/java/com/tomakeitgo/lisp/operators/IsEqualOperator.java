@@ -9,7 +9,7 @@ import java.util.List;
 public class IsEqualOperator extends SExpression.Lambda {
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-        if (rest.size() < 2) return new Error("isEqual requires at least two arguments");
+        if (rest.size() < 2) return new SError("isEqual requires at least two arguments");
 
         SExpression s = rest.getFirst();
         for (SExpression sExpression : rest.subList(1, rest.size())) {

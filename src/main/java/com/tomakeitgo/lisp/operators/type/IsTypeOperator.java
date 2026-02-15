@@ -15,7 +15,7 @@ public class IsTypeOperator extends SExpression.Lambda {
 
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-        if (rest.size() != 1) return new Error("requires one argument.");
+        if (rest.size() != 1) return new SError("requires one argument.");
         return type.isInstance(rest.getFirst()) ? Interpreter.TRUE : Interpreter.FALSE;
     }
 }

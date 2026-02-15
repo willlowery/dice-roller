@@ -42,7 +42,7 @@ class InterpreterTest {
                 of(new SAtom("true"), "(isEqual 1 1)"),
                 of(new SAtom("false"), "(isEqual 1 2)"),
                 of(new SAtom("false"), "(isEqual 1 2)"),
-                of(new SExpression.Error("isEqual requires at least two arguments"), "(isEqual 1)"),
+                of(new SExpression.SError("isEqual requires at least two arguments"), "(isEqual 1)"),
 
                 // type checks
                 of(new SAtom("true"), "(type/isNumber 42)"),
@@ -61,24 +61,27 @@ class InterpreterTest {
 
                 // text/toAtom
                 of(new SAtom("text"), "(text/toAtom 'text')"),
-                of(new SExpression.Error("toAtom requires exactly one argument of type text"), "(text/toAtom )"),
-                of(new SExpression.Error("toAtom requires exactly one argument of type text"), "(text/toAtom 1)"),
-                
+                of(new SExpression.SError("toAtom requires exactly one argument of type text"), "(text/toAtom )"),
+                of(new SExpression.SError("toAtom requires exactly one argument of type text"), "(text/toAtom 1)"),
+
                 // number to text
                 of(new SText("42"), "(number/text 42)"),
                 of(new SText("3.14"), "(number/text 3.14)"),
                 of(new SText("5"), "(number/text 5.00)"),
-                of(new SExpression.Error("number/text requires exactly one argument"), "(number/text)"),
-                of(new SExpression.Error("number/text requires exactly one argument"), "(number/text 1 2)"),
-                of(new SExpression.Error("number/text requires a number argument"), "(number/text 'hello')")
+                of(new SExpression.SError("number/text requires exactly one argument"), "(number/text)"),
+                of(new SExpression.SError("number/text requires exactly one argument"), "(number/text 1 2)"),
+                of(new SExpression.SError("number/text requires a number argument"), "(number/text 'hello')"),
+                // def
+                of(new SNumber(BigDecimal.valueOf(5)), "(def x 5) x"),
+                of(new SNumber(BigDecimal.valueOf(2)), "(def x 1) (def x 2) x")
         );
     }
-    
+
 
     @ParameterizedTest
     @MethodSource("errorCasesInputs")
     void errorCases(String input) {
-        assertInstanceOf(SExpression.Error.class, eval(input));
+        assertInstanceOf(SExpression.SError.class, eval(input));
     }
 
     static Stream<Arguments> errorCasesInputs() {
@@ -98,25 +101,7 @@ class InterpreterTest {
                 of("(if true 1)")
         );
     }
-
-
-    @Test
-    void defAndReference() {
-        var interpreter = new Interpreter();
-        var ctx = Interpreter.createSContext();
-        interpreter.eval(parse("(def x 5)"), ctx);
-        assertEquals(new SNumber(new BigDecimal("5")), interpreter.eval(parse("x"), ctx));
-    }
-
-    @Test
-    void defRedefine() {
-        var interpreter = new Interpreter();
-        var ctx = Interpreter.createSContext();
-        interpreter.eval(parse("(def x 1)"), ctx);
-        interpreter.eval(parse("(def x 2)"), ctx);
-        assertEquals(new SNumber(new BigDecimal("2")), interpreter.eval(parse("x"), ctx));
-    }
-
+    
     @Test
     void lambdaIdentity() {
         var interpreter = new Interpreter();
@@ -144,7 +129,7 @@ class InterpreterTest {
 
     @Test
     void ifWrongArity() {
-        assertInstanceOf(SExpression.Error.class, eval("(if true 1)"));
+        assertInstanceOf(SExpression.SError.class, eval("(if true 1)"));
     }
 
     @Test
@@ -212,12 +197,12 @@ class InterpreterTest {
 
     @Test
     void listAppendNotAList() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/append 1 2)"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/append 1 2)"));
     }
 
     @Test
     void listAppendTooFewArgs() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/append ())"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/append ())"));
     }
 
     @Test
@@ -232,17 +217,17 @@ class InterpreterTest {
 
     @Test
     void isEmptyNotAList() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/isEmpty 42)"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/isEmpty 42)"));
     }
 
     @Test
     void isEmptyTooFewArgs() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/isEmpty)"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/isEmpty)"));
     }
 
     @Test
     void isEmptyTooManyArgs() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/isEmpty () ())"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/isEmpty () ())"));
     }
 
     @Test
@@ -252,22 +237,22 @@ class InterpreterTest {
 
     @Test
     void firstOnEmptyList() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/first ())"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/first ())"));
     }
 
     @Test
     void firstNotAList() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/first 42)"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/first 42)"));
     }
 
     @Test
     void firstTooFewArgs() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/first)"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/first)"));
     }
 
     @Test
     void firstTooManyArgs() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/first (list/append () 1) (list/append () 2))"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/first (list/append () 1) (list/append () 2))"));
     }
 
     @Test
@@ -286,27 +271,27 @@ class InterpreterTest {
 
     @Test
     void restOnEmptyList() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/rest ())"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/rest ())"));
     }
 
     @Test
     void restNotAList() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/rest 42)"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/rest 42)"));
     }
 
     @Test
     void restTooFewArgs() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/rest)"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/rest)"));
     }
 
     @Test
     void restTooManyArgs() {
-        assertInstanceOf(SExpression.Error.class, eval("(list/rest (list/append () 1) (list/append () 2))"));
+        assertInstanceOf(SExpression.SError.class, eval("(list/rest (list/append () 1) (list/append () 2))"));
     }
 
     @Test
     void testEval() {
-        assertInstanceOf(SExpression.Error.class, eval("(eval)"));
+        assertInstanceOf(SExpression.SError.class, eval("(eval)"));
         assertEquals(eval("1"), eval("(eval 1)"));
         assertEquals(eval("'1'"), eval("(eval '1')"));
     }
@@ -333,17 +318,17 @@ class InterpreterTest {
 
     @Test
     void condNoMatch() {
-        assertInstanceOf(SExpression.Error.class, eval("(cond (false 1))"));
+        assertInstanceOf(SExpression.SError.class, eval("(cond (false 1))"));
     }
 
     @Test
     void condInvalidClause() {
-        assertInstanceOf(SExpression.Error.class, eval("(cond true)"));
+        assertInstanceOf(SExpression.SError.class, eval("(cond true)"));
     }
 
     @Test
     void condNoClauses() {
-        assertInstanceOf(SExpression.Error.class, eval("(cond)"));
+        assertInstanceOf(SExpression.SError.class, eval("(cond)"));
     }
 
 
@@ -363,9 +348,17 @@ class InterpreterTest {
         assertTrue(text.contains("lambda"));
         assertTrue(text.contains("help"));
     }
-    
+
     private static SExpression eval(String input) {
-        return new Interpreter().eval(parse(input), Interpreter.createSContext());
+        var toEval = new Parser().parseAll(new Lexer().lex(input));
+        var context = Interpreter.createSContext();
+
+        SExpression result = null;
+        for (SExpression expression : toEval) {
+            result = new Interpreter().eval(expression, context);
+        }
+
+        return result;
     }
 
     private static SExpression parse(String input) {

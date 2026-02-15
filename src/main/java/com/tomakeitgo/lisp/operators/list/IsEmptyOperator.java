@@ -10,14 +10,14 @@ public class IsEmptyOperator extends SExpression.Lambda {
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
         if (rest.size() != 1) {
-            return new SExpression.Error("isEmpty requires exactly one argument");
+            return new SError("isEmpty requires exactly one argument");
         }
 
         SExpression arg = rest.getFirst();
         if (arg instanceof SExpression.SList list) {
             return list.value().isEmpty() ? Interpreter.TRUE : Interpreter.FALSE;
         } else {
-            return new SExpression.Error("isEmpty requires a list argument");
+            return new SError("isEmpty requires a list argument");
         }
     }
 }

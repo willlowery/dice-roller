@@ -10,7 +10,7 @@ public class IfOperator extends SExpression.Lambda {
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
         if (rest.size() != 3) {
-            return new Error("if requires three arguments");
+            return new SError("if requires three arguments");
         }
         if (Interpreter.TRUE.equals(interpreter.eval(rest.getFirst(), definitions))) {
             return interpreter.eval(rest.get(1), definitions);

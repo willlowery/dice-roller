@@ -33,7 +33,7 @@ public class Interpreter {
         sContext.register("type/isText", new IsTypeOperator(SText.class));
         sContext.register("type/isAtom", new IsTypeOperator(SAtom.class));
         sContext.register("type/isNumber", new IsTypeOperator(SNumber.class));
-        sContext.register("type/isError", new IsTypeOperator(SExpression.Error.class));
+        sContext.register("type/isError", new IsTypeOperator(SError.class));
         sContext.register("type/isLambda", new IsTypeOperator(Lambda.class));
         
         sContext.register("text/concat", new TextConcatOperator());
@@ -69,7 +69,7 @@ public class Interpreter {
             SContext definitions
     ) {
         return switch (expression) {
-            case SExpression.Error e -> e;
+            case SError e -> e;
             case SNumber t -> t;
             case SText t -> t;
             case Lambda l -> l;

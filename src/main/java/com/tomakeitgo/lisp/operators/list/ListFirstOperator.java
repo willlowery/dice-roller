@@ -10,16 +10,16 @@ public class ListFirstOperator extends SExpression.Lambda {
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
         if (rest.size() != 1) {
-            return new SExpression.Error("first requires exactly one argument");
+            return new SError("first requires exactly one argument");
         }
 
         SExpression arg = rest.getFirst();
         if (!(arg instanceof SExpression.SList list)) {
-            return new SExpression.Error("first requires a list argument");
+            return new SError("first requires a list argument");
         }
 
         if (list.value().isEmpty()) {
-            return new SExpression.Error("first called on an empty list");
+            return new SError("first called on an empty list");
         }
 
         return list.value().getFirst();

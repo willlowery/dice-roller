@@ -10,11 +10,11 @@ public class ToError extends SExpression.Lambda {
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
         if (rest.size() != 1)
-            return new Error("requires one argument.");
+            return new SError("requires one argument.");
         if (rest.get(0) instanceof SText s) {
-            return new Error(s.value());
+            return new SError(s.value());
 
         }
-        return new Error("Unable to make error from type");
+        return new SError("Unable to make error from type");
     }
 }
