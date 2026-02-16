@@ -104,10 +104,11 @@ public sealed interface SExpression {
         public Lambda(List<SExpression> remaining, SContext context) {
             this.arguments = (SList) remaining.getFirst();
             this.expression = remaining;
-            this.context = context.copy();
+            this.context = context;
         }
 
         public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
+            var context  = this.context.copy();
             if (arguments.value().size() != rest.size()) return new SError("Invalid number of arguments");
             for (int i = 0; i < arguments.value().size(); i++) {
                 var arg = arguments.value().get(i);
