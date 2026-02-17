@@ -34,6 +34,8 @@ class InterpreterTest {
                 of(new SNumber(new BigDecimal("2")), "(if false 1 2)"),
                 of(new SNumber(new BigDecimal("1")), "(if (isEqual 1 1) 1 2)"),
                 of(new SNumber(new BigDecimal("2")), "(if (isEqual 1 2) 1 2)"),
+                of(Interpreter.TRUE, "((lambda (x) (if (isEqual x 1) true false)) 1)"),
+                of(Interpreter.FALSE, "((lambda (x) (if (isEqual x 1) true false)) 0)"),
 
                 // isEqual
                 of(new SAtom("true"), "(isEqual 1 1)"),
@@ -55,11 +57,17 @@ class InterpreterTest {
                 of(new SNumber(new BigDecimal("3")), "(number/div 12 4)"),
                 of(new SNumber(new BigDecimal("1")), "(number/mod 7 3)"),
                 of(new SNumber(new BigDecimal("3")), "(number/divInt 7 2)"),
+                of(new SNumber(new BigDecimal("6")), "(number/add (number/add 1 2) 3)"),
 
                 // text/toAtom
                 of(new SAtom("text"), "(text/toAtom 'text')"),
                 of(new SError("toAtom requires exactly one argument of type text"), "(text/toAtom )"),
                 of(new SError("toAtom requires exactly one argument of type text"), "(text/toAtom 1)"),
+
+                // text/concat
+                of(new SText("hello world"), "(text/concat 'hello' ' world')"),
+                of(new SText("ab"), "(text/concat 'a' 42 'b')"),
+                of(new SText("n=7"), "(text/concat 'n=' (number/text 7))"),
 
                 // number to text
                 of(new SText("42"), "(number/text 42)"),
@@ -68,9 +76,53 @@ class InterpreterTest {
                 of(new SError("number/text requires exactly one argument"), "(number/text)"),
                 of(new SError("number/text requires exactly one argument"), "(number/text 1 2)"),
                 of(new SError("number/text requires a number argument"), "(number/text 'hello')"),
+
                 // def
                 of(new SNumber(BigDecimal.valueOf(5)), "(def x 5) x"),
                 of(new SNumber(BigDecimal.valueOf(2)), "(def x 1) (def x 2) x"),
+
+                // lambda
+                of(new SNumber(new BigDecimal("7")), "(def id (lambda (x) x)) (id 7)"),
+                of(new SNumber(new BigDecimal("5")), "(def add (lambda (a b) (number/add a b))) (add 2 3)"),
+                of(new SNumber(new BigDecimal("10")), "(def y 10) (def getY (lambda () y)) (getY)"),
+                of(new SNumber(new BigDecimal("0")), "(def countdown (lambda (n) (if (isEqual n 0 ) 0 (countdown (number/sub n 1 )) ))) (countdown 5)"),
+
+                // eval
+                of(new SNumber(new BigDecimal("1")), "(eval 1)"),
+                of(new SText("1"), "(eval '1')"),
+
+                // cond
+                of(new SNumber(new BigDecimal("1")), "(cond (true 1))"),
+                of(new SNumber(new BigDecimal("2")), "(cond (false 1) (true 2))"),
+                of(new SText("b"), "(cond ((isEqual 1 2) 'a') ((isEqual 1 1) 'b'))"),
+                of(new SNumber(new BigDecimal("1")), "(cond (true 1) (true 2))"),
+
+                // list/append
+                of(new SList(List.of(new SNumber(new BigDecimal("1")))), "(list/append () 1)"),
+                of(new SList(List.of(
+                        new SNumber(new BigDecimal("1")),
+                        new SNumber(new BigDecimal("2")),
+                        new SNumber(new BigDecimal("3"))
+                )), "(list/append () 1 2 3)"),
+                of(new SList(List.of(
+                        new SNumber(new BigDecimal("1")),
+                        new SNumber(new BigDecimal("2")),
+                        new SNumber(new BigDecimal("3"))
+                )), "((lambda (xs) (list/append xs 3)) (list/append () 1 2))"),
+
+                // list/isEmpty
+                of(Interpreter.TRUE, "(list/isEmpty ())"),
+                of(Interpreter.FALSE, "(list/isEmpty (list/append () 1))"),
+
+                // list/first
+                of(new SNumber(new BigDecimal("1")), "(list/first (list/append () 1 2 3))"),
+
+                // list/rest
+                of(new SList(List.of(
+                        new SNumber(new BigDecimal("2")),
+                        new SNumber(new BigDecimal("3"))
+                )), "(list/rest (list/append () 1 2 3))"),
+                of(new SList(List.of()), "(list/rest (list/append () 1))"),
 
                 // list/nth
                 of(new SNumber(new BigDecimal("1")), "(list/nth (list 1 2 3) 0)"),
@@ -79,7 +131,16 @@ class InterpreterTest {
                 of(new SError("list/nth index out of bounds"), "(list/nth (list 1 2 3) -1)"),
                 of(new SError("list/nth requires a list as the first argument"), "(list/nth 42 0)"),
                 of(new SError("list/nth requires a number as the second argument"), "(list/nth (list 1) 'a')"),
-                of(new SError("list/nth requires exactly two arguments"), "(list/nth)")
+                of(new SError("list/nth requires exactly two arguments"), "(list/nth)"),
+
+                // list/contains
+                of(Interpreter.TRUE, "(list/contains (list 1 2 3) 2)"),
+                of(Interpreter.FALSE, "(list/contains (list 1 2 3) 5)"),
+                of(Interpreter.FALSE, "(list/contains () 1)"),
+                of(Interpreter.TRUE, "(list/contains (list 'a' 'b') 'a')"),
+                of(new SError("list/contains requires a list as the first argument"), "(list/contains 42 1)"),
+                of(new SError("list/contains requires exactly two arguments"), "(list/contains (list 1))"),
+                of(new SError("list/contains requires exactly two arguments"), "(list/contains (list 1) 1 2)")
         );
     }
 
@@ -104,243 +165,32 @@ class InterpreterTest {
                 of("(number/divInt 1)"),
                 of("(type/isNumber 1 2)"),
                 of("(isEqual 1)"),
-                of("(if true 1)")
+                of("(if true 1)"),
+                of("(eval)"),
+                of("(cond (false 1))"),
+                of("(cond true)"),
+                of("(cond)"),
+                of("(list/append 1 2)"),
+                of("(list/append ())"),
+                of("(list/isEmpty 42)"),
+                of("(list/isEmpty)"),
+                of("(list/isEmpty () ())"),
+                of("(list/first ())"),
+                of("(list/first 42)"),
+                of("(list/first)"),
+                of("(list/first (list/append () 1) (list/append () 2))"),
+                of("(list/rest ())"),
+                of("(list/rest 42)"),
+                of("(list/rest)"),
+                of("(list/rest (list/append () 1) (list/append () 2))")
         );
     }
-    
-    @Test
-    void lambdaIdentity() {
-        var interpreter = new Interpreter();
-        var ctx = Interpreter.createSContext();
-        interpreter.eval(parse("(def id (lambda (x) x))"), ctx);
-        assertEquals(new SNumber(new BigDecimal("7")), interpreter.eval(parse("(id 7)"), ctx));
-    }
-
-    @Test
-    void lambdaMultiArg() {
-        var interpreter = new Interpreter();
-        var ctx = Interpreter.createSContext();
-        interpreter.eval(parse("(def add (lambda (a b) (number/add a b)))"), ctx);
-        assertEquals(new SNumber(new BigDecimal("5")), interpreter.eval(parse("(add 2 3)"), ctx));
-    }
-
-    @Test
-    void lambdaCapturesScope() {
-        var interpreter = new Interpreter();
-        var ctx = Interpreter.createSContext();
-        interpreter.eval(parse("(def y 10)"), ctx);
-        interpreter.eval(parse("(def getY (lambda () y))"), ctx);
-        assertEquals(new SNumber(new BigDecimal("10")), interpreter.eval(parse("(getY)"), ctx));
-    }
-
-    @Test
-    void ifWrongArity() {
-        assertInstanceOf(SError.class, eval("(if true 1)"));
-    }
-
-    @Test
-    void ifInLambda() {
-        assertEquals(Interpreter.TRUE, eval("((lambda (x) (if (isEqual x 1) true false)) 1)"));
-        assertEquals(Interpreter.FALSE, eval("((lambda (x) (if (isEqual x 1) true false)) 0)"));
-    }
-
 
     @Test
     void numberAddDecimal() {
         var result = eval("(number/add 0.1 0.2)");
         assertInstanceOf(SNumber.class, result);
         assertEquals(0, new BigDecimal("0.3").compareTo(((SNumber) result).value()));
-    }
-
-    @Test
-    void textConcat() {
-        assertEquals(new SText("hello world"), eval("(text/concat 'hello' ' world')"));
-    }
-
-    @Test
-    void textConcatSkipsNonText() {
-        assertEquals(new SText("ab"), eval("(text/concat 'a' 42 'b')"));
-    }
-
-    @Test
-    void nestedCalls() {
-        assertEquals(new SNumber(new BigDecimal("6")), eval("(number/add (number/add 1 2) 3)"));
-    }
-
-    @Test
-    void recursiveLambda() {
-        var interpreter = new Interpreter();
-        var ctx = Interpreter.createSContext();
-        interpreter.eval(parse("(def countdown (lambda (n) (if (isEqual n 0 ) 0 (countdown (number/sub n 1 )) )))"), ctx);
-        assertEquals(new SNumber(new BigDecimal("0")), interpreter.eval(parse("(countdown 5)"), ctx));
-    }
-
-    @Test
-    void listAppendSingle() {
-        var result = eval("(list/append () 1)");
-        assertEquals(new SList(java.util.List.of(new SNumber(new BigDecimal("1")))), result);
-    }
-
-    @Test
-    void listAppendMultiple() {
-        var result = eval("(list/append () 1 2 3)");
-        assertEquals(new SList(java.util.List.of(
-                new SNumber(new BigDecimal("1")),
-                new SNumber(new BigDecimal("2")),
-                new SNumber(new BigDecimal("3"))
-        )), result);
-    }
-
-    @Test
-    void listAppendToExisting() {
-        var result = eval("((lambda (xs) (list/append xs 3)) (list/append () 1 2))");
-        assertEquals(new SList(List.of(
-                new SNumber(new BigDecimal("1")),
-                new SNumber(new BigDecimal("2")),
-                new SNumber(new BigDecimal("3"))
-        )), result);
-    }
-
-    @Test
-    void listAppendNotAList() {
-        assertInstanceOf(SError.class, eval("(list/append 1 2)"));
-    }
-
-    @Test
-    void listAppendTooFewArgs() {
-        assertInstanceOf(SError.class, eval("(list/append ())"));
-    }
-
-    @Test
-    void isEmptyOnEmptyList() {
-        assertEquals(Interpreter.TRUE, eval("(list/isEmpty ())"));
-    }
-
-    @Test
-    void isEmptyOnNonEmptyList() {
-        assertEquals(Interpreter.FALSE, eval("(list/isEmpty (list/append () 1))"));
-    }
-
-    @Test
-    void isEmptyNotAList() {
-        assertInstanceOf(SError.class, eval("(list/isEmpty 42)"));
-    }
-
-    @Test
-    void isEmptyTooFewArgs() {
-        assertInstanceOf(SError.class, eval("(list/isEmpty)"));
-    }
-
-    @Test
-    void isEmptyTooManyArgs() {
-        assertInstanceOf(SError.class, eval("(list/isEmpty () ())"));
-    }
-
-    @Test
-    void firstReturnsFirstItem() {
-        assertEquals(new SNumber(new BigDecimal("1")), eval("(list/first (list/append () 1 2 3))"));
-    }
-
-    @Test
-    void firstOnEmptyList() {
-        assertInstanceOf(SError.class, eval("(list/first ())"));
-    }
-
-    @Test
-    void firstNotAList() {
-        assertInstanceOf(SError.class, eval("(list/first 42)"));
-    }
-
-    @Test
-    void firstTooFewArgs() {
-        assertInstanceOf(SError.class, eval("(list/first)"));
-    }
-
-    @Test
-    void firstTooManyArgs() {
-        assertInstanceOf(SError.class, eval("(list/first (list/append () 1) (list/append () 2))"));
-    }
-
-    @Test
-    void restReturnsRemainingItems() {
-        var result = eval("(list/rest (list/append () 1 2 3))");
-        assertEquals(new SList(List.of(
-                new SNumber(new BigDecimal("2")),
-                new SNumber(new BigDecimal("3"))
-        )), result);
-    }
-
-    @Test
-    void restOfSingleElementList() {
-        assertEquals(new SList(List.of()), eval("(list/rest (list/append () 1))"));
-    }
-
-    @Test
-    void restOnEmptyList() {
-        assertInstanceOf(SError.class, eval("(list/rest ())"));
-    }
-
-    @Test
-    void restNotAList() {
-        assertInstanceOf(SError.class, eval("(list/rest 42)"));
-    }
-
-    @Test
-    void restTooFewArgs() {
-        assertInstanceOf(SError.class, eval("(list/rest)"));
-    }
-
-    @Test
-    void restTooManyArgs() {
-        assertInstanceOf(SError.class, eval("(list/rest (list/append () 1) (list/append () 2))"));
-    }
-
-    @Test
-    void testEval() {
-        assertInstanceOf(SError.class, eval("(eval)"));
-        assertEquals(eval("1"), eval("(eval 1)"));
-        assertEquals(eval("'1'"), eval("(eval '1')"));
-    }
-
-    @Test
-    void condBasicMatch() {
-        assertEquals(new SNumber(new BigDecimal("1")), eval("(cond (true 1))"));
-    }
-
-    @Test
-    void condMultiBranch() {
-        assertEquals(new SNumber(new BigDecimal("2")), eval("(cond (false 1) (true 2))"));
-    }
-
-    @Test
-    void condWithExpressions() {
-        assertEquals(new SText("b"), eval("(cond ((isEqual 1 2) 'a') ((isEqual 1 1) 'b'))"));
-    }
-
-    @Test
-    void condFirstMatchWins() {
-        assertEquals(new SNumber(new BigDecimal("1")), eval("(cond (true 1) (true 2))"));
-    }
-
-    @Test
-    void condNoMatch() {
-        assertInstanceOf(SError.class, eval("(cond (false 1))"));
-    }
-
-    @Test
-    void condInvalidClause() {
-        assertInstanceOf(SError.class, eval("(cond true)"));
-    }
-
-    @Test
-    void condNoClauses() {
-        assertInstanceOf(SError.class, eval("(cond)"));
-    }
-
-
-    @Test
-    void numberToTextComposable() {
-        assertEquals(new SText("n=7"), eval("(text/concat 'n=' (number/text 7))"));
     }
 
     @Test
@@ -365,9 +215,5 @@ class InterpreterTest {
         }
 
         return result;
-    }
-
-    private static SExpression parse(String input) {
-        return new Parser().parse(new Lexer().lex(input));
     }
 }
