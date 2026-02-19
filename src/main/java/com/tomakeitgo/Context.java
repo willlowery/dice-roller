@@ -50,7 +50,7 @@ public class Context {
         return new Parser().parse(new Lexer().lex(command));
     }
 
-    static List<SExpression> parseAll(String command) {
+    public static List<SExpression> parseAll(String command) {
         return new Parser().parseAll(new Lexer().lex(command));
     }
 

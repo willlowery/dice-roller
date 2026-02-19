@@ -22,6 +22,8 @@ public class Interpreter {
         SContext sContext = new SContext(null);
         sContext.register("eval", new EvalOperator());
 
+        sContext.register("module", new ModuleOperator());
+        sContext.register("import", new ImportOperator());
         sContext.register("if", new IfOperator());
         sContext.register("cond", new CondOperator());
         sContext.register("isEqual", new IsEqualOperator());
