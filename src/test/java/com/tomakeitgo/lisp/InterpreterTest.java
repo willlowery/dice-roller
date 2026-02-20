@@ -64,6 +64,14 @@ class InterpreterTest {
                 of(new SError("toAtom requires exactly one argument of type text"), "(text/toAtom )"),
                 of(new SError("toAtom requires exactly one argument of type text"), "(text/toAtom 1)"),
 
+                // text/fromAtom
+                of(new SText("foo"), "(text/fromAtom foo)"),
+                of(new SText("true"), "(text/fromAtom true)"),
+                of(new SError("fromAtom requires exactly one argument of type atom"), "(text/fromAtom 'already text')"),
+                of(new SError("fromAtom requires exactly one argument of type atom"), "(text/fromAtom 42)"),
+                of(new SError("fromAtom requires exactly one argument of type atom"), "(text/fromAtom)"),
+                of(new SError("fromAtom requires exactly one argument of type atom"), "(text/fromAtom a b)"),
+
                 // text/concat
                 of(new SText("hello world"), "(text/concat 'hello' ' world')"),
                 of(new SText("ab"), "(text/concat 'a' 42 'b')"),
