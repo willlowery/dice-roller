@@ -72,6 +72,16 @@ class InterpreterTest {
                 of(new SError("fromAtom requires exactly one argument of type atom"), "(text/fromAtom)"),
                 of(new SError("fromAtom requires exactly one argument of type atom"), "(text/fromAtom a b)"),
 
+                // text/startsWith
+                of(Interpreter.TRUE, "(text/startsWith 'hello' 'hel')"),
+                of(Interpreter.FALSE, "(text/startsWith 'hello' 'world')"),
+                of(Interpreter.TRUE, "(text/startsWith 'hello' '')"),
+                of(Interpreter.FALSE, "(text/startsWith '' 'a')"),
+                of(Interpreter.TRUE, "(text/startsWith 'hello' 'hello')"),
+                of(new SError("text/startsWith requires exactly two arguments of type text"), "(text/startsWith 'hello' 42)"),
+                of(new SError("text/startsWith requires exactly two arguments of type text"), "(text/startsWith 'hello')"),
+                of(new SError("text/startsWith requires exactly two arguments of type text"), "(text/startsWith 'a' 'b' 'c')"),
+
                 // text/concat
                 of(new SText("hello world"), "(text/concat 'hello' ' world')"),
                 of(new SText("ab"), "(text/concat 'a' 42 'b')"),
