@@ -6,7 +6,7 @@ import com.tomakeitgo.lisp.SExpression;
 
 import java.util.List;
 
-public class CondOperator extends SExpression.Lambda {
+public class CondOperator implements SExpression.Operator {
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
         if (rest.isEmpty()) {

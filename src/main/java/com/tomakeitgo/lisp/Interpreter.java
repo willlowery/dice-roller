@@ -78,7 +78,7 @@ public class Interpreter {
             case SError e -> e;
             case SNumber t -> t;
             case SText t -> t;
-            case Lambda l -> l;
+            case Operator o -> o;
             case SAtom t -> definitions.find(t);
             case SList l -> {
                 var list = l.value();
@@ -99,9 +99,9 @@ public class Interpreter {
                     yield ifOperator.eval(rest, this, definitions);
                 } else if (key instanceof CondOperator condOperator) {
                     yield condOperator.eval(rest, this, definitions);
-                } else if (key instanceof Lambda lambda) {
+                } else if (key instanceof Operator operator) {
                     List<SExpression> args = rest.stream().map(i -> eval(i, definitions)).toList();
-                    yield lambda.eval(args, this, definitions);
+                    yield operator.eval(args, this, definitions);
                 }
 
                 yield l;

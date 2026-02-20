@@ -83,7 +83,7 @@ public class Context {
     }
 
 
-    public static class ContextCallBackOperator extends SExpression.Lambda {
+    public static class ContextCallBackOperator implements SExpression.Operator {
         private final Context context;
 
         public ContextCallBackOperator(Context context) {

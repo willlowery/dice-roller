@@ -11,7 +11,7 @@ import java.util.List;
 
 import static com.tomakeitgo.Context.parseAll;
 
-public class ImportOperator extends SExpression.Lambda {
+public class ImportOperator implements SExpression.Operator {
 
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {

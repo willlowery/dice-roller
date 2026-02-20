@@ -6,7 +6,7 @@ import com.tomakeitgo.lisp.SExpression;
 
 import java.util.List;
 
-public class IsTypeOperator extends SExpression.Lambda {
+public class IsTypeOperator implements SExpression.Operator {
     private final Class<? extends SExpression> type;
 
     public IsTypeOperator(Class<? extends SExpression> type) {

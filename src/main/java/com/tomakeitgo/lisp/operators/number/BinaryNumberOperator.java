@@ -7,7 +7,7 @@ import com.tomakeitgo.lisp.SExpression;
 import java.util.List;
 import java.util.function.BiFunction;
 
-public class BinaryNumberOperator extends SExpression.Lambda {
+public class BinaryNumberOperator implements SExpression.Operator {
     private final BiFunction<SExpression.SNumber, SExpression.SNumber, SExpression> operation;
 
     public BinaryNumberOperator(BiFunction<SExpression.SNumber, SExpression.SNumber, SExpression> operation) {

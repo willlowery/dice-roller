@@ -6,7 +6,7 @@ import com.tomakeitgo.lisp.SExpression;
 
 import java.util.List;
 
-public class TextConcatOperator extends SExpression.Lambda {
+public class TextConcatOperator implements SExpression.Operator {
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
         StringBuilder value = new StringBuilder();

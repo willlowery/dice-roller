@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
 
-public class RollOperator extends SExpression.Lambda {
+public class RollOperator implements SExpression.Operator {
     private static final Random random = new Random();
 
     @Override

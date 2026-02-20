@@ -7,7 +7,7 @@ import com.tomakeitgo.lisp.SExpression;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListAppendOperator extends SExpression.Lambda {
+public class ListAppendOperator implements SExpression.Operator {
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
         if (rest.size() < 2) {

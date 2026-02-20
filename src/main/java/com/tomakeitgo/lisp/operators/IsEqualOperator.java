@@ -6,7 +6,7 @@ import com.tomakeitgo.lisp.SExpression;
 
 import java.util.List;
 
-public class IsEqualOperator extends SExpression.Lambda {
+public class IsEqualOperator implements SExpression.Operator {
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
         if (rest.size() < 2) return new SError("isEqual requires at least two arguments");

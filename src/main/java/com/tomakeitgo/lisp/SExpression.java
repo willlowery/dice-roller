@@ -90,16 +90,14 @@ public sealed interface SExpression {
         }
     }
 
-    non-sealed class Lambda implements SExpression {
+    non-sealed interface Operator extends SExpression {
+        SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions);
+    }
+
+    class Lambda implements Operator {
         private final SList arguments;
         private final List<SExpression> expression;
         private final SContext context;
-
-        public Lambda() {
-            arguments = null;
-            expression = null;
-            context = null;
-        }
 
         public Lambda(List<SExpression> remaining, SContext context) {
             this.arguments = (SList) remaining.getFirst();
@@ -107,6 +105,7 @@ public sealed interface SExpression {
             this.context = context;
         }
 
+        @Override
         public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
             var context  = this.context.copy();
             if (arguments.value().size() != rest.size()) return new SError("Invalid number of arguments");

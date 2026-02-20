@@ -6,7 +6,7 @@ import com.tomakeitgo.lisp.SExpression;
 
 import java.util.List;
 
-public class EvalOperator extends SExpression.Lambda {
+public class EvalOperator implements SExpression.Operator {
 
     @Override
     public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
