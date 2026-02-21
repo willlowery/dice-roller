@@ -7,6 +7,7 @@ import com.googlecode.lanterna.terminal.Terminal;
 import com.tomakeitgo.Context;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 
 public class Screen {
@@ -25,6 +26,7 @@ public class Screen {
 
         tabPane.addTab("Output", new OutputLog(context::getCommandOutput));
         tabPane.addTab("Console", new OutputLog(context::getConsoleLog));
+        tabPane.addTab("Editor", new FileEditor(Path.of("test.lsp")));
 
         context.addAvailableActive(inputBar);
         context.addAvailableActive(tabPane);
@@ -56,10 +58,14 @@ public class Screen {
 
     public void draw() throws IOException {
         clockBar.draw(terminal);
-        tabPane.draw(terminal, context.isActive(tabPane));
         clockSeparator.draw(terminal);
         inputBar.draw(terminal);
-
+        tabPane.draw(terminal, context.isActive(tabPane));
+        
+        if (context.isActive(inputBar)) {
+            terminal.setCursorPosition(inputBar.getCursorPosition());
+        }
         terminal.flush();
+        
     }
 }

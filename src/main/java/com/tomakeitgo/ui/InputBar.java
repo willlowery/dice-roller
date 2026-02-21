@@ -85,13 +85,18 @@ public class InputBar {
     }
 
     public void draw(Terminal terminal) throws IOException {
-        var ind = context.isActive(this) ? "+" : "|";
+        boolean isActive = context.isActive(this);
+        var ind = isActive ? "+" : "|";
         terminal
                 .newTextGraphics()
                 .putString(
                         new TerminalPosition(0, location - 1),
                         ind + scrollBuffer.getVisibleSlice()
                 );
-        terminal.setCursorPosition(new TerminalPosition(scrollBuffer.getCursorScreenPosition() + 1, location - 1));
+        
+    }
+
+    public TerminalPosition getCursorPosition() {
+        return new TerminalPosition(scrollBuffer.getCursorScreenPosition() + 1, location - 1);
     }
 }

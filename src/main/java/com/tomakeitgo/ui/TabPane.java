@@ -38,8 +38,20 @@ public class TabPane {
 
     public void input(KeyStroke stroke) {
         switch (stroke.getKeyType()) {
-            case ArrowLeft -> activeTab = Math.max(0, activeTab - 1);
-            case ArrowRight -> activeTab = Math.min(panels.size() - 1, activeTab + 1);
+            case ArrowLeft -> {
+                if (stroke.isAltDown()) {
+                    activeTab = Math.max(0, activeTab - 1);
+                } else if (!panels.isEmpty()) {
+                    panels.get(activeTab).input(stroke);
+                }
+            }
+            case ArrowRight -> {
+                if (stroke.isAltDown()) {
+                    activeTab = Math.min(panels.size() - 1, activeTab + 1);
+                } else if (!panels.isEmpty()) {
+                    panels.get(activeTab).input(stroke);
+                }
+            }
             default -> {
                 if (!panels.isEmpty()) {
                     panels.get(activeTab).input(stroke);
