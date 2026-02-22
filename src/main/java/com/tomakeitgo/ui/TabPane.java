@@ -17,6 +17,10 @@ public class TabPane {
         this.tabBar = new TabBar();
     }
 
+    public void setActive(Panel panel){
+        activeTab = panels.indexOf(panel);
+    }
+    
     public void addTab(String label, Panel panel) {
         tabBar.addTab(label);
         panels.add(panel);
@@ -31,6 +35,7 @@ public class TabPane {
 
     public void draw(Terminal terminal, boolean focused) throws IOException {
         tabBar.draw(terminal, activeTab);
+        
         if (!panels.isEmpty()) {
             panels.get(activeTab).draw(terminal, focused);
         }

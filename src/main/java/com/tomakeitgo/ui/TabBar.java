@@ -10,7 +10,12 @@ import java.util.List;
 
 public class TabBar {
     private final List<String> labels = new ArrayList<>();
+    private final Separator separator;
     private int columns = 0;
+    
+    public TabBar(){
+        separator = new Separator(2);
+    }
 
     public void addTab(String label) {
         labels.add(label);
@@ -18,6 +23,7 @@ public class TabBar {
 
     public void resize(TerminalSize size) {
         this.columns = size.getColumns();
+        separator.resize(size);
     }
 
     public void draw(Terminal terminal, int activeTab) throws IOException {
@@ -36,5 +42,8 @@ public class TabBar {
         terminal
                 .newTextGraphics()
                 .putString(new TerminalPosition(0, 1), line);
+
+        
+        separator.draw(terminal);
     }
 }

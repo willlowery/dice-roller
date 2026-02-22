@@ -1,8 +1,10 @@
 package com.tomakeitgo;
 
+import com.googlecode.lanterna.TerminalPosition;
 import com.tomakeitgo.lisp.*;
 import com.tomakeitgo.ui.FileEditor;
 import com.tomakeitgo.ui.Screen;
+import com.tomakeitgo.ui.TabPane;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ public class Context {
     private SContext active = root;
     private final HashMap<SExpression, SContext> contexts = new HashMap<>();
     private Screen screen;
+    private TerminalPosition cursor = new TerminalPosition(0,0);
 
     public Context() {
         contexts.put(new SExpression.SText("/"), root);
@@ -81,13 +84,22 @@ public class Context {
     public boolean isActive(Object o) {
         return panes.indexOf(o) == activePane;
     }
-
+    
+    
     public void tabActive() {
         this.activePane = (this.activePane + 1) % panes.size();
     }
 
     public void setScreen(Screen screen) {
         this.screen = screen;
+    }
+
+    public void setCursor(TerminalPosition cursor) {
+        this.cursor = cursor;
+    }
+
+    public TerminalPosition getCursor() {
+        return cursor;
     }
 
     public static class ContextCallBackOperator implements SExpression.Operator {
@@ -117,7 +129,11 @@ public class Context {
                     );
                     return new SText("Context set to " + rest.get(1).toString());
                 } else if (text.equalsIgnoreCase("open") && rest.size() > 1 && rest.get(1) instanceof SText toOpen) {
-                    context.screen.getTabPane().addTab(toOpen.value(), new FileEditor(Path.of(toOpen.value())));
+                    TabPane tabPane = context.screen.getTabPane();
+                    context.setActivePane(context.screen.getTabPane());
+                    FileEditor panel = new FileEditor(context, Path.of(toOpen.value()));
+                    tabPane.addTab(toOpen.value(), panel);
+                    tabPane.setActive(panel);
                 }
             }
 

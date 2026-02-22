@@ -93,10 +93,9 @@ public class InputBar {
                         new TerminalPosition(0, location - 1),
                         ind + scrollBuffer.getVisibleSlice()
                 );
-        
+        if (isActive){
+            context.setCursor(new TerminalPosition(scrollBuffer.getCursorScreenPosition() + 1, location - 1));
+        }
     }
 
-    public TerminalPosition getCursorPosition() {
-        return new TerminalPosition(scrollBuffer.getCursorScreenPosition() + 1, location - 1);
-    }
 }

@@ -4,6 +4,7 @@ import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.Terminal;
+import com.tomakeitgo.Context;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +15,7 @@ import java.util.List;
 public class FileEditor implements TabPane.Panel {
     private final Path filePath;
     private final List<StringBuilder> lines = new ArrayList<>();
+    private final Context context;
 
     private int cursorRow = 0;
     private int cursorCol = 0;
@@ -29,8 +31,9 @@ public class FileEditor implements TabPane.Panel {
     private static final int START_ROW = 3;
     private static final int GUTTER_WIDTH = 5;
 
-    public FileEditor(Path filePath) {
+    public FileEditor(Context context, Path filePath) {
         this.filePath = filePath;
+        this.context = context;
         load();
     }
 
@@ -76,6 +79,7 @@ public class FileEditor implements TabPane.Panel {
         if (statusLine.length() < totalWidth) {
             statusLine = statusLine + " ".repeat(totalWidth - statusLine.length());
         }
+        
         graphics.putString(new TerminalPosition(0, START_ROW), statusLine);
 
         // File content starts one row below the status line
@@ -107,7 +111,7 @@ public class FileEditor implements TabPane.Panel {
                     GUTTER_WIDTH + (cursorCol - scrollCol),
                     contentStartRow + (cursorRow - scrollRow)
             );
-            terminal.setCursorPosition(position);
+            context.setCursor(position);
         }
     }
 

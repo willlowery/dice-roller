@@ -12,7 +12,6 @@ import java.io.IOException;
 public class Screen {
     private final Terminal terminal;
     private final InputBar inputBar;
-    private final Separator clockSeparator = new Separator(2);
     private final TabPane tabPane;
     private final Clock clockBar = new Clock();
     private final Context context;
@@ -47,7 +46,6 @@ public class Screen {
 
     public void resize(TerminalSize size) {
         clockBar.resize(size);
-        clockSeparator.resize(size);
         tabPane.resize(size);
         inputBar.resize(size);
 
@@ -60,14 +58,10 @@ public class Screen {
 
     public void draw() throws IOException {
         clockBar.draw(terminal);
-        clockSeparator.draw(terminal);
-        inputBar.draw(terminal);
         tabPane.draw(terminal, context.isActive(tabPane));
+        inputBar.draw(terminal);
         
-        if (context.isActive(inputBar)) {
-            terminal.setCursorPosition(inputBar.getCursorPosition());
-        }
+        terminal.setCursorPosition(context.getCursor());
         terminal.flush();
-        
     }
 }
