@@ -58,6 +58,7 @@ class InterpreterTest {
                 of(new SNumber(new BigDecimal("1")), "(number/mod 7 3)"),
                 of(new SNumber(new BigDecimal("3")), "(number/divInt 7 2)"),
                 of(new SNumber(new BigDecimal("6")), "(number/add (number/add 1 2) 3)"),
+                of(new SNumber(new BigDecimal(".3")), "(number/add 0.1 0.2)"),
 
                 // text/toAtom
                 of(new SAtom("text"), "(text/toAtom 'text')"),
@@ -205,13 +206,6 @@ class InterpreterTest {
     }
 
     @Test
-    void numberAddDecimal() {
-        var result = eval("(number/add 0.1 0.2)");
-        assertInstanceOf(SNumber.class, result);
-        assertEquals(0, new BigDecimal("0.3").compareTo(((SNumber) result).value()));
-    }
-
-    @Test
     void helpReturnsText() {
         var result = eval("(help)");
         assertInstanceOf(SText.class, result);
@@ -225,11 +219,12 @@ class InterpreterTest {
 
     private static SExpression eval(String input) {
         var toEval = new Parser().parseAll(new Lexer().lex(input));
-        var context = Interpreter.createSContext();
+        Interpreter interpreter = new Interpreter();
+        var context = interpreter.createSContext();
 
         SExpression result = null;
         for (SExpression expression : toEval) {
-            result = new Interpreter().eval(expression, context);
+            result = interpreter.eval(expression, context);
         }
 
         return result;

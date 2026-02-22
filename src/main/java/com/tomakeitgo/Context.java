@@ -12,25 +12,33 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Context {
+    private final Interpreter interpreter;
     private boolean running = true;
     private final ArrayList<String> commands = new ArrayList<>();
     private final ArrayList<String> consoleLog = new ArrayList<>();
     private final ArrayList<String> commandOutput = new ArrayList<>();
     private int activePane;
     private final List<Object> panes = new ArrayList<>();
-    private final SContext root = Interpreter.createSContext();
-    private SContext active = root;
+    private final SContext root;
+    private SContext active;
+    
     private final HashMap<SExpression, SContext> contexts = new HashMap<>();
     private Screen screen;
     private TerminalPosition cursor = new TerminalPosition(0,0);
 
     public Context() {
+        interpreter = new Interpreter();
+        root = interpreter.createSContext();
+        active = root;
+        
         contexts.put(new SExpression.SText("/"), root);
         active.register(new SExpression.SAtom("host/send"), new ContextCallBackOperator(this));
-        new Interpreter().eval(parse("(def log (lambda (x) (host/send 'log' x)))"), active);
-        new Interpreter().eval(parse("(def clear (lambda () (host/send 'clear')))"), active);
-        new Interpreter().eval(parse("(def quit (lambda () (host/send 'quit')))"), active);
-        new Interpreter().eval(parse("(def swap (lambda (x) (host/send 'setContext' x)))"), active);
+
+
+        interpreter.eval(parse("(def log (lambda (x) (host/send 'log' x)))"), active);
+        interpreter.eval(parse("(def clear (lambda () (host/send 'clear')))"), active);
+        interpreter.eval(parse("(def quit (lambda () (host/send 'quit')))"), active);
+        interpreter.eval(parse("(def swap (lambda (x) (host/send 'setContext' x)))"), active);
     }
 
     public void shutdown() {
@@ -45,7 +53,7 @@ public class Context {
         commands.add(command);
         SExpression exp = parse(command);
 
-        var a = new Interpreter().eval(exp, active);
+        var a = interpreter.eval(exp, active);
         if (a instanceof SExpression.SText text) {
             commandOutput.add(text.value());
         } else if (a != null) {

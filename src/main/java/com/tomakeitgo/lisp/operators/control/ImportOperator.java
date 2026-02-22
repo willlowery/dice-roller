@@ -23,12 +23,12 @@ public class ImportOperator implements SExpression.Operator {
             module = a;
         }
         if (rest.getFirst() instanceof SText t) {
-            SContext active = Interpreter.createSContext();
+            SContext active = interpreter.createSContext();
 
             try {
                 String command = new String(Files.readAllBytes(Path.of(System.getProperty("user.dir"), t.value())));
                 for (SExpression expression : parseAll(command)) {
-                    new Interpreter().eval(expression, active);
+                    interpreter.eval(expression, active);
                 }
                 if (module == null) {
                     module = (SAtom) active.find(new SAtom(":module:name"));

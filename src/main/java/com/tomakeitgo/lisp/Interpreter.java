@@ -18,7 +18,11 @@ public class Interpreter {
     public static final SAtom TRUE = new SAtom("true");
     public static final SAtom FALSE = new SAtom("false");
 
-    public static SContext createSContext() {
+    public Interpreter(){
+        
+    }
+    
+    public SContext createSContext() {
         SContext sContext = new SContext(null);
         sContext.register("eval", new EvalOperator());
 

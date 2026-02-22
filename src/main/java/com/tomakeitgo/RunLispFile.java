@@ -10,11 +10,14 @@ import static com.tomakeitgo.Context.parseAll;
 
 public class RunLispFile {
     public static void main(String[] args) throws Exception {
-        var active = Interpreter.createSContext();
+        var importBaseDirectory = Path.of(System.getProperty("user.dir"));
         
-        String command = new String(Files.readAllBytes(Path.of(System.getProperty("user.dir"), "test.lsp")));
+        Interpreter interpreter = new Interpreter();
+        var active = interpreter.createSContext();
+
+        String command = new String(Files.readAllBytes(importBaseDirectory.resolve("test.lsp")));
         for (SExpression expression : parseAll(command)) {
-            SExpression eval = new Interpreter().eval(expression, active);
+            SExpression eval = interpreter.eval(expression, active);
             System.out.println(eval);
         }
     }
