@@ -1,7 +1,10 @@
 package com.tomakeitgo;
 
 import com.tomakeitgo.lisp.*;
+import com.tomakeitgo.ui.FileEditor;
+import com.tomakeitgo.ui.Screen;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +19,7 @@ public class Context {
     private final SContext root = Interpreter.createSContext();
     private SContext active = root;
     private final HashMap<SExpression, SContext> contexts = new HashMap<>();
+    private Screen screen;
 
     public Context() {
         contexts.put(new SExpression.SText("/"), root);
@@ -82,6 +86,9 @@ public class Context {
         this.activePane = (this.activePane + 1) % panes.size();
     }
 
+    public void setScreen(Screen screen) {
+        this.screen = screen;
+    }
 
     public static class ContextCallBackOperator implements SExpression.Operator {
         private final Context context;
@@ -109,6 +116,8 @@ public class Context {
                             (i) -> context.root.copy()
                     );
                     return new SText("Context set to " + rest.get(1).toString());
+                } else if (text.equalsIgnoreCase("open") && rest.size() > 1 && rest.get(1) instanceof SText toOpen) {
+                    context.screen.getTabPane().addTab(toOpen.value(), new FileEditor(Path.of(toOpen.value())));
                 }
             }
 

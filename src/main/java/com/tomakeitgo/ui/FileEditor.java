@@ -36,6 +36,9 @@ public class FileEditor implements TabPane.Panel {
 
     private void load() {
         try {
+            if(!Files.exists(filePath)){
+                Files.createFile(filePath);
+            }
             List<String> fileLines = Files.readAllLines(filePath);
             lines.clear();
             for (String line : fileLines) {

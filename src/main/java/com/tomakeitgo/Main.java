@@ -15,6 +15,7 @@ public class Main {
         
         Terminal terminal = defaultTerminalFactory.createTerminal();
         var screen = new Screen(terminal, context);
+        context.setScreen(screen);
         terminal.addResizeListener((t, size) -> screen.resize(size));
 
         terminal.enterPrivateMode();
