@@ -6,7 +6,6 @@ import com.tomakeitgo.lisp.SExpression;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import static com.tomakeitgo.Context.parseAll;
@@ -26,7 +25,7 @@ public class ImportOperator implements SExpression.Operator {
             SContext active = interpreter.createSContext();
 
             try {
-                String command = new String(Files.readAllBytes(Path.of(System.getProperty("user.dir"), t.value())));
+                String command = new String(Files.readAllBytes(interpreter.getImportBaseDirectory().resolve(t.value())));
                 for (SExpression expression : parseAll(command)) {
                     interpreter.eval(expression, active);
                 }

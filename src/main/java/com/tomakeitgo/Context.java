@@ -27,7 +27,9 @@ public class Context {
     private TerminalPosition cursor = new TerminalPosition(0,0);
 
     public Context() {
-        interpreter = new Interpreter();
+        var importBaseDirectory = Path.of(System.getProperty("user.dir"));
+
+        interpreter = new Interpreter(importBaseDirectory);
         root = interpreter.createSContext();
         active = root;
         
@@ -139,7 +141,7 @@ public class Context {
                 } else if (text.equalsIgnoreCase("open") && rest.size() > 1 && rest.get(1) instanceof SText toOpen) {
                     TabPane tabPane = context.screen.getTabPane();
                     context.setActivePane(context.screen.getTabPane());
-                    FileEditor panel = new FileEditor(context, Path.of(toOpen.value()));
+                    FileEditor panel = new FileEditor(context, interpreter.getImportBaseDirectory().resolve(toOpen.value()));
                     tabPane.addTab(toOpen.value(), panel);
                     tabPane.setActive(panel);
                 }

@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -218,8 +219,10 @@ class InterpreterTest {
     }
 
     private static SExpression eval(String input) {
+        var importBaseDirectory = Path.of(System.getProperty("user.dir"));
+
         var toEval = new Parser().parseAll(new Lexer().lex(input));
-        Interpreter interpreter = new Interpreter();
+        Interpreter interpreter = new Interpreter(importBaseDirectory);
         var context = interpreter.createSContext();
 
         SExpression result = null;

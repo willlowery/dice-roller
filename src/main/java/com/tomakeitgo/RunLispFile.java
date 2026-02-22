@@ -12,7 +12,7 @@ public class RunLispFile {
     public static void main(String[] args) throws Exception {
         var importBaseDirectory = Path.of(System.getProperty("user.dir"));
         
-        Interpreter interpreter = new Interpreter();
+        Interpreter interpreter = new Interpreter(importBaseDirectory);
         var active = interpreter.createSContext();
 
         String command = new String(Files.readAllBytes(importBaseDirectory.resolve("test.lsp")));

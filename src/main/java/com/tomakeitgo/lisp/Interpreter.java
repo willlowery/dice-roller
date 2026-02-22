@@ -10,6 +10,7 @@ import com.tomakeitgo.lisp.operators.system.*;
 import com.tomakeitgo.lisp.operators.text.*;
 import com.tomakeitgo.lisp.operators.type.*;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import static com.tomakeitgo.lisp.SExpression.*;
@@ -18,8 +19,10 @@ public class Interpreter {
     public static final SAtom TRUE = new SAtom("true");
     public static final SAtom FALSE = new SAtom("false");
 
-    public Interpreter(){
-        
+    private final Path importBaseDirectory;
+    
+    public Interpreter(Path importBaseDirectory){
+        this.importBaseDirectory = importBaseDirectory;
     }
     
     public SContext createSContext() {
@@ -28,6 +31,7 @@ public class Interpreter {
 
         sContext.register("module", new ModuleOperator());
         sContext.register("import", new ImportOperator());
+        
         sContext.register("if", new IfOperator());
         sContext.register("cond", new CondOperator());
         sContext.register("isEqual", new IsEqualOperator());
@@ -112,5 +116,9 @@ public class Interpreter {
                 yield l;
             }
         };
+    }
+
+    public Path getImportBaseDirectory() {
+        return importBaseDirectory;
     }
 }
