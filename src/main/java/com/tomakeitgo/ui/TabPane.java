@@ -7,6 +7,8 @@ import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 public class TabPane {
     private final TabBar tabBar;
@@ -19,6 +21,10 @@ public class TabPane {
 
     public void setActive(Panel panel){
         activeTab = panels.indexOf(panel);
+    }
+
+    public Optional<Panel> findPanel(Predicate<Panel> predicate) {
+        return panels.stream().filter(predicate).findFirst();
     }
     
     public void addTab(String label, Panel panel) {

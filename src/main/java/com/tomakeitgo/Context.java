@@ -140,10 +140,20 @@ public class Context {
                     return new SText("Context set to " + rest.get(1).toString());
                 } else if (text.equalsIgnoreCase("open") && rest.size() > 1 && rest.get(1) instanceof SText toOpen) {
                     TabPane tabPane = context.screen.getTabPane();
-                    context.setActivePane(context.screen.getTabPane());
-                    FileEditor panel = new FileEditor(context, interpreter.getImportBaseDirectory().resolve(toOpen.value()));
-                    tabPane.addTab(toOpen.value(), panel);
-                    tabPane.setActive(panel);
+                    Path resolvedPath = interpreter.getImportBaseDirectory().resolve(toOpen.value());
+                    context.setActivePane(tabPane);
+
+                    var existing = tabPane.findPanel(p ->
+                            p instanceof FileEditor fe && fe.getFilePath().equals(resolvedPath)
+                    );
+
+                    if (existing.isPresent()) {
+                        tabPane.setActive(existing.get());
+                    } else {
+                        FileEditor panel = new FileEditor(context, resolvedPath);
+                        tabPane.addTab(toOpen.value(), panel);
+                        tabPane.setActive(panel);
+                    }
                 }
             }
 

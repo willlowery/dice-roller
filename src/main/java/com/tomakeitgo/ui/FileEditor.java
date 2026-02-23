@@ -31,6 +31,10 @@ public class FileEditor implements TabPane.Panel {
     private static final int START_ROW = 3;
     private static final int GUTTER_WIDTH = 5;
 
+    public Path getFilePath() {
+        return filePath;
+    }
+
     public FileEditor(Context context, Path filePath) {
         this.filePath = filePath;
         this.context = context;
