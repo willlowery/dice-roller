@@ -26,7 +26,19 @@ public class TabPane {
     public Optional<Panel> findPanel(Predicate<Panel> predicate) {
         return panels.stream().filter(predicate).findFirst();
     }
-    
+
+    public boolean isLastTab() {
+        return activeTab >= panels.size() - 1;
+    }
+
+    public void firstTab() {
+        activeTab = 0;
+    }
+
+    public void nextTab() {
+        activeTab = Math.min(activeTab + 1, panels.size() - 1);
+    }
+
     public void addTab(String label, Panel panel) {
         tabBar.addTab(label);
         panels.add(panel);

@@ -36,7 +36,14 @@ public class Screen {
 
     public void input(KeyStroke stroke) throws IOException {
         if (stroke.getKeyType().equals(KeyType.Tab)) {
-            context.tabActive();
+            if (context.isActive(inputBar)) {
+                context.setActivePane(tabPane);
+                tabPane.firstTab();
+            } else if (tabPane.isLastTab()) {
+                context.setActivePane(inputBar);
+            } else {
+                tabPane.nextTab();
+            }
         } else if (context.isActive(inputBar)) {
             inputBar.input(stroke);
         } else if (context.isActive(tabPane)) {
