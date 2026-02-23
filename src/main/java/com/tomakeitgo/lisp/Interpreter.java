@@ -34,6 +34,8 @@ public class Interpreter {
         
         sContext.register("if", new IfOperator());
         sContext.register("cond", new CondOperator());
+        sContext.register("and", new AndOperator());
+        sContext.register("or", new OrOperator());
         sContext.register("isEqual", new IsEqualOperator());
         sContext.register("quote", new QuoteOperator());
 
@@ -108,6 +110,10 @@ public class Interpreter {
                     yield ifOperator.eval(rest, this, definitions);
                 } else if (key instanceof CondOperator condOperator) {
                     yield condOperator.eval(rest, this, definitions);
+                } else if (key instanceof AndOperator andOperator) {
+                    yield andOperator.eval(rest, this, definitions);
+                } else if (key instanceof OrOperator orOperator) {
+                    yield orOperator.eval(rest, this, definitions);
                 } else if (key instanceof Operator operator) {
                     List<SExpression> args = rest.stream().map(i -> eval(i, definitions)).toList();
                     yield operator.eval(args, this, definitions);

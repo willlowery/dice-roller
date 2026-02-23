@@ -153,6 +153,24 @@ class InterpreterTest {
                 of(new SError("list/nth requires a number as the second argument"), "(list/nth (list 1) 'a')"),
                 of(new SError("list/nth requires exactly two arguments"), "(list/nth)"),
 
+                // and
+                of(Interpreter.TRUE, "(and true true)"),
+                of(Interpreter.FALSE, "(and true false)"),
+                of(Interpreter.FALSE, "(and false true)"),
+                of(Interpreter.FALSE, "(and false false)"),
+                of(Interpreter.TRUE, "(and true true true)"),
+                of(Interpreter.FALSE, "(and true false true)"),
+                of(new SError("and requires at least two arguments"), "(and true)"),
+
+                // or
+                of(Interpreter.TRUE, "(or true true)"),
+                of(Interpreter.TRUE, "(or true false)"),
+                of(Interpreter.TRUE, "(or false true)"),
+                of(Interpreter.FALSE, "(or false false)"),
+                of(Interpreter.TRUE, "(or false false true)"),
+                of(Interpreter.FALSE, "(or false false false)"),
+                of(new SError("or requires at least two arguments"), "(or true)"),
+
                 // list/contains
                 of(Interpreter.TRUE, "(list/contains (list 1 2 3) 2)"),
                 of(Interpreter.FALSE, "(list/contains (list 1 2 3) 5)"),
