@@ -39,6 +39,18 @@ public class TabPane {
         activeTab = Math.min(activeTab + 1, panels.size() - 1);
     }
 
+    public boolean isFirstTab() {
+        return activeTab <= 0;
+    }
+
+    public void lastTab() {
+        activeTab = Math.max(0, panels.size() - 1);
+    }
+
+    public void previousTab() {
+        activeTab = Math.max(0, activeTab - 1);
+    }
+
     public void addTab(String label, Panel panel) {
         tabBar.addTab(label);
         panels.add(panel);

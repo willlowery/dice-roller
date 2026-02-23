@@ -44,6 +44,15 @@ public class Screen {
             } else {
                 tabPane.nextTab();
             }
+        } else if (stroke.getKeyType().equals(KeyType.ReverseTab)) {
+            if (context.isActive(inputBar)) {
+                context.setActivePane(tabPane);
+                tabPane.lastTab();
+            } else if (tabPane.isFirstTab()) {
+                context.setActivePane(inputBar);
+            } else {
+                tabPane.previousTab();
+            }
         } else if (context.isActive(inputBar)) {
             inputBar.input(stroke);
         } else if (context.isActive(tabPane)) {
