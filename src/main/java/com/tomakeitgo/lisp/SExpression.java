@@ -95,24 +95,27 @@ public sealed interface SExpression {
     }
 
     class Lambda implements Operator {
-        private final SList arguments;
+        private final SExpression arguments;
         private final List<SExpression> expression;
         private final SContext context;
 
         public Lambda(List<SExpression> remaining, SContext context) {
-            this.arguments = (SList) remaining.getFirst();
+            this.arguments = remaining.getFirst();
             this.expression = remaining;
             this.context = context;
         }
 
         @Override
         public SExpression eval(List<SExpression> rest, Interpreter interpreter, SContext definitions) {
-            var context  = this.context.copy();
-            if (arguments.value().size() != rest.size()) return new SError("Invalid number of arguments");
-            for (int i = 0; i < arguments.value().size(); i++) {
-                var arg = arguments.value().get(i);
-                var value = rest.get(i);
-                context.register(arg, value);
+            var context = this.context.copy();
+
+            if (arguments instanceof SList argList) {
+                if (argList.value().size() != rest.size()) return new SError("Invalid number of arguments");
+                for (int i = 0; i < argList.value().size(); i++) {
+                    context.register(argList.value().get(i), rest.get(i));
+                }
+            } else {
+                context.register(arguments, new SList(rest));
             }
 
             SExpression result = new SError("Lambda body needs at least one statement");

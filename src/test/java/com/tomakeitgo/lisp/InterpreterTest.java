@@ -107,6 +107,12 @@ class InterpreterTest {
                 of(new SNumber(new BigDecimal("10")), "(def y 10) (def getY (lambda () y)) (getY)"),
                 of(new SNumber(new BigDecimal("0")), "(def countdown (lambda (n) (if (isEqual n 0 ) 0 (countdown (number/sub n 1 )) ))) (countdown 5)"),
 
+                // lambda with argument list
+                of(new SNumber(new BigDecimal("1")), "(def first (lambda args (list/first args))) (first 1 2 3)"),
+                of(new SList(List.of(new SNumber(new BigDecimal("1")), new SNumber(new BigDecimal("2")), new SNumber(new BigDecimal("3")))), "(def wrap (lambda args args)) (wrap 1 2 3)"),
+                of(Interpreter.TRUE, "((lambda args (list/isEmpty args)))"),
+                of(new SNumber(new BigDecimal("42")), "((lambda args (list/first args)) 42)"),
+
                 // eval
                 of(new SNumber(new BigDecimal("1")), "(eval 1)"),
                 of(new SText("1"), "(eval '1')"),
